@@ -1,8 +1,8 @@
 [![English](https://img.shields.io/badge/README-English-494cad.svg)](https://github.com/we0-dev/we0/blob/main/README.md) [![中文](https://img.shields.io/badge/README-中文-494cad.svg)](https://github.com/we0-dev/we0/blob/main/README.zh.md) 
 
-# we-dev
+# we0
 
-## What is We-dev
+## What is We0
 
 ![alt text](image-1.png)
 
