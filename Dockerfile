@@ -1,4 +1,4 @@
-FROM node:20.18
+FROM docker.1ms.run/library/node:20.18
 
 WORKDIR /app
 
