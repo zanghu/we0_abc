@@ -8,10 +8,12 @@ import { getTerminalTheme } from '../utils/theme';
 import { useFileStore } from '../../../stores/fileStore';
 import { Terminal } from '../index';
 
-const lightTheme = {
-  foreground: '#000000',
-  background: 'ffffff',
-  cursor: '#000000',
+// 定义终端主题
+const terminalTheme = {
+  foreground: '#333333',
+  background: '#ffffff',
+  cursor: '#333333',
+  cursorAccent: '#ffffff',
   selection: '#add6ff80',
   black: '#000000',
   red: '#e51400',
@@ -20,38 +22,40 @@ const lightTheme = {
   blue: '#0451a5',
   magenta: '#811f3f',
   cyan: '#007acc',
-  white: '#000000',
-  brightBlack: '#000000',
+  white: '#333333',
+  brightBlack: '#666666',
   brightRed: '#cd3131',
   brightGreen: '#008000',
   brightYellow: '#795e25',
   brightBlue: '#0451a5',
   brightMagenta: '#811f3f',
   brightCyan: '#007acc',
-  brightWhite: '#000000',
+  brightWhite: '#333333',
 };
 
-const darkTheme = {
-  foreground: '#e4e4e4',
+// 定义暗色主题
+const darkTerminalTheme = {
+  foreground: '#d4d4d4',
   background: '#1e1e1e',
-  cursor: '#efefef',
-  selection: '#29b8db',
+  cursor: '#d4d4d4',
+  cursorAccent: '#1e1e1e',
+  selection: '#264f78',
   black: '#000000',
-  red: '#f14c4c',
-  green: '#23d18b',
-  yellow: '#f5f543',
-  blue: '#3b8eea',
-  magenta: '#d670d6',
-  cyan: '#000000',
-  white: '#e4e4e4',
-  brightBlack: '#000000',
+  red: '#cd3131',
+  green: '#0dbc79',
+  yellow: '#e5e510',
+  blue: '#2472c8',
+  magenta: '#bc3fbc',
+  cyan: '#11a8cd',
+  white: '#e5e5e5',
+  brightBlack: '#666666',
   brightRed: '#f14c4c',
   brightGreen: '#23d18b',
   brightYellow: '#f5f543',
   brightBlue: '#3b8eea',
-  brightMagenta: '#000000',
+  brightMagenta: '#d670d6',
   brightCyan: '#29b8db',
-  brightWhite: '#000000',
+  brightWhite: '#e5e5e5',
 };
 
 export function useTerminal(containerRef: React.RefObject<HTMLDivElement>) {
@@ -59,7 +63,6 @@ export function useTerminal(containerRef: React.RefObject<HTMLDivElement>) {
   const [isDark, setIsDark] = useState(false);
   const terminalRef = useRef<XTerm | null>(null);
   const fitAddonRef = useRef<FitAddon | null>(null);
-  const terminalOpen = useRef<boolean>(false);
   const { files, addError } = useFileStore();
 
   const { history, addToHistory, getPrevious, getNext } = useCommandHistory();
@@ -89,7 +92,7 @@ export function useTerminal(containerRef: React.RefObject<HTMLDivElement>) {
     const term = new XTerm({
       cursorBlink: true,
       convertEol: true,
-      theme: isDark ? darkTheme : lightTheme,
+      theme: isDark ? darkTerminalTheme : terminalTheme,
       fontSize: 12,
       fontFamily: 'Menlo, Monaco, "Courier New", monospace',
       fontWeight: '500',
@@ -172,7 +175,7 @@ export function useTerminal(containerRef: React.RefObject<HTMLDivElement>) {
     const handler = (e: MediaQueryListEvent) => {
       setIsDark(e.matches);
       if (terminalRef.current) {
-        terminalRef.current.options.theme = e.matches ? darkTheme : lightTheme;
+        terminalRef.current.options.theme = e.matches ? darkTerminalTheme : terminalTheme;
       }
     };
 

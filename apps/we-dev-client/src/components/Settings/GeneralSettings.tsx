@@ -204,7 +204,8 @@ export function GeneralSettings() {
             <input
               type="text"
               placeholder="http://localhost:11434"
-              value={formData.ollamaUrl || "http://localhost:11434"}
+              defaultValue={"http://localhost:11434"}
+              value={formData.ollamaUrl }
               onChange={(e) => setFormData({ ...formData, ollamaUrl: e.target.value })}
               className="w-full px-2.5 py-1.5 bg-white dark:bg-[#1e1e1e] border border-border rounded-md text-foreground focus:outline-none focus:border-blue-500 text-sm"
             />
