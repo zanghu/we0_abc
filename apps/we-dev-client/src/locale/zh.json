@@ -1,0 +1,135 @@
+{
+  "Welcome to React": "欢迎使用React",
+  "chat": {
+    "errors": {
+      "file_size_limit": "文件 {fileName} 超过5MB限制",
+      "upload_failed": "上传失败",
+      "paste_failed": "粘贴图片失败",
+      "add_image_failed": "添加图片失败"
+    },
+    "success": {
+      "images_uploaded": "图片上传成功",
+      "images_uploaded_multiple": "{count}张图片上传成功",
+      "image_pasted": "图片粘贴成功",
+      "images_pasted_multiple": "{count}张图片粘贴成功",
+      "image_added": "图片已添加到输入框",
+      "images_added_multiple": "{count}张图片已添加到输入框"
+    },
+    "placeholders": {
+      "input": "输入消息，按Enter发送，Shift+Enter换行...",
+      "tips": "我能怎么样帮助你? (粘贴图片用Ctrl+V)"
+    },
+    "buttons": {
+      "send": "发送",
+      "upload": "上传图片",
+      "upload_tips": "点击上传或粘贴图片",
+      "upload_sketch": "上传Sketch文件",
+      "upload_sketch_tips": "点击上传Sketch文件",
+      "upload_disabled": "上传已禁用",
+      "upload_image": "上传图片",
+      "waiting": "请等待当前进程完成",
+      "not_support_image": "当前模型不支持图片上传",
+      "click_to_upload": "点击上传或粘贴图片"
+    },
+    "examples": {
+      "title": "你可以这样问我",
+      "prompts": {
+        "todo": "使用React和Tailwind构建一个待办事项应用",
+        "blog": "使用Astro构建一个简单的博客",
+        "cookie": "使用Material UI创建一个cookie同意表单",
+        "game": "制作一个太空入侵者游戏",
+        "center": "如何让一个div居中？"
+      }
+    },
+    "loading": {
+      "generating": "AI正在生成回答..."
+    },
+    "modePlaceholders": {
+      "chat": "这是聊天模式。你可以直接与AI对话，并返回你想要的结果。",
+      "builder": "这是构建模式，用于通过对话构建你的项目"
+    }
+  },
+  "settings": {
+    "title": "设置",
+    "language": "语言",
+    "general": "常规",
+    "tokens": "Tokens",
+    "General": "常规",
+    "Language": "语言",
+    "keyPlaceholder": "请输入你的API Key",
+    "save": "保存"
+  },
+  "editor": {
+    "editor": "编辑器",
+    "preview": "预览",
+    "search_in_files": "在文件中搜索..."
+  },
+  "header": {
+    "download": "下载代码",
+    "deploy": "部署",
+    "open_directory": "打开目录",
+    "error": {
+      "open_directory": "打开目录失败"
+    }
+  },
+  "explorer": {
+    "clear_all": "清除所有",
+    "explorer": "资源管理器"
+  },
+  "sidebar": {
+    "start_new_chat": "开始新聊天",
+    "search": "搜索",
+    "chat_history": "聊天记录",
+    "my_subscription": "我的订阅",
+    "settings": "设置",
+    "contact_us": "联系我们",
+    "personal_plan": "个人计划"
+  },
+  "usage": {
+    "usage": "使用情况",
+    "monthly_usage": "月使用",
+    "tokens_used": "使用的token",
+    "remaining": "剩余",
+    "billing_cycle": "计费周期",
+    "next_reset": "下次重置",
+    "days": "天",
+    "monthly_limit": "每月限额",
+    "buy_tokens": "购买更多token",
+    "personal_plan": "个人面板"
+  },
+  "login": {
+    "guest": "游客",
+    "title": "请登录",
+    "click_to_login": "点击登录",
+    "AI_powered_development_platform": "AI驱动的开发平台",
+    "email": "邮箱",
+    "password": "密码",
+    "sign_in": "登录",
+    "remember_me": "记住我",
+    "forgot_password": "忘记密码",
+    "By_signing_in_you_agree_to_our": "登录即表示您同意我们的",
+    "terms_of_service": "服务条款",
+    "privacy_policy": "隐私政策",
+    "and": "和",
+    "need_an_account": "需要一个账户",
+    "register": "注册",
+    "weChat": "微信",
+    "basic_information": "基础资料、头像等公开信息",
+    "continue_with_wechat": "使用微信登录",
+    "connecting": "连接中...",
+    "sign_up_with_wechat": "使用微信注册",
+    "WeDev_will_access_the_following_wechat_information": "WeDev将访问以下微信信息",
+    "WeDev_will_access_the_following_GitHub_information": "WeDev将访问以下GitHub信息",
+    "basic_profile": "基本信息",
+    "public_repositories": "公共仓库",
+    "and_Gists": "和Gists",
+    "continue_with_github": "使用GitHub登录",
+    "chat_limit_reached": "聊天次数已达到上限",
+    "chat_limit_reached_tips": "您已达到3次免费聊天的限制。请登录以继续使用聊天功能。",
+    "login": "登录",
+    "close": "关闭"
+  },
+  "sketch": {
+    "title": "Sketch编辑器"
+  }
+}

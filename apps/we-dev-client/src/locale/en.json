@@ -1,0 +1,136 @@
+{
+  "Welcome to React": "Welcome to React",
+  "chat": {
+    "errors": {
+      "file_size_limit": "File {fileName} exceeds 5MB limit",
+      "upload_failed": "Upload failed",
+      "paste_failed": "Failed to paste image",
+      "add_image_failed": "Failed to add image"
+    },
+    "success": {
+      "images_uploaded": "Image uploaded successfully",
+      "images_uploaded_multiple": "{count} images uploaded successfully",
+      "image_pasted": "Image pasted successfully",
+      "images_pasted_multiple": "{count} images pasted successfully",
+      "image_added": "Image added to input",
+      "images_added_multiple": "{count} images added to input"
+    },
+    "placeholders": {
+      "input": "Enter message, press Enter to send, Shift+Enter for new line...",
+      "tips": "How can I help you? (Press Ctrl+V to paste images)"
+    },
+    "buttons": {
+      "send": "Send",
+      "upload": "Upload Image",
+      "upload_tips": "Click to upload or paste images",
+      "upload_sketch": "Upload Sketch",
+      "upload_sketch_tips": "Click to upload sketch files",
+      "upload_disabled": "Upload disabled",
+      "upload_image": "Upload Image",
+      "waiting": "Please wait for the current process to complete",
+      "not_support_image": "The current model does not support image upload",
+      "click_to_upload": "Click to upload or paste images"
+    },
+    "examples": {
+      "title": "You can ask me like this",
+      "prompts": {
+        "todo": "Build a todo app using React and Tailwind",
+        "blog": "Build a simple blog using Astro",
+        "cookie": "Create a cookie consent form using Material UI",
+        "game": "Make a Space Invaders game",
+        "center": "How to center a div?"
+      }
+    },
+    "loading": {
+      "generating": "AI is generating response..."
+    },
+    "modePlaceholders": {
+      "chat": "This is the chat mode. You can directly talk to the AI ​​and return the answer you want.",
+      "builder": "This is builder mode, used to build your project through dialogue"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "general": "General",
+    "tokens": "Tokens",
+    "General": "General",
+    "Language": "Language",
+    "keyPlaceholder": "Please enter your API key",
+    "save": "Save"
+  },
+  "editor": {
+    "editor": "Editor",
+    "preview": "Preview",
+    "search_in_files": "Search in files..."
+  },
+  "header": {
+    "download": "Download Code",
+    "deploy": "Deploy",
+    "open_directory": "Open Directory",
+    "error": {
+      "open_directory": "Failed to open directory"
+    }
+  },
+  "explorer": {
+    "clear_all": "Clear All",
+    "explorer": "Explorer"
+  },
+  "sidebar": {
+    "start_new_chat": "Start New Chat",
+    "search": "Search",
+    "chat_history": "Chat History",
+    "my_subscription": "My Subscription",
+    "settings": "Settings",
+    "contact_us": "Contact Us",
+    "personal_plan": "Personal Plan"
+  },
+  "usage": {
+    "usage": "Usage",
+    "monthly_usage": "Monthly Usage",
+    "tokens_used": "tokens used",
+    "remaining": "remaining",
+    "billing_cycle": "Billing Cycle",
+    "next_reset": "Next Reset",
+    "days": "days",
+    "monthly_limit": "Monthly Limit",
+    "buy_tokens": "Buy More Tokens",
+    "personal_plan": "Personal Plan"
+  },
+  "login": {
+    "guest": "Guest",
+    "title": "Please Sign In",
+    "click_to_login": "Click to login",
+    "AI_powered_development_platform": "AI-Powered Development Platform",
+    "email": "Email",
+    "password": "Password",
+    "sign_in": "Sign In",
+    "signing_in": "Signing in...",
+    "remember_me": "Remember me",
+    "forgot_password": "Forgot password",
+    "By_signing_in_you_agree_to_our": "By signing in, you agree to our",
+    "terms_of_service": "Terms of Service",
+    "privacy_policy": "Privacy Policy",
+    "and": "and",
+    "need_an_account": "Need an account",
+    "register": "Register",
+    "weChat": "WeChat",
+    "basic_information": "Basic information, avatar, etc.",
+    "continue_with_wechat": "Continue with WeChat",
+    "connecting": "Connecting...",
+    "sign_up_with_wechat": "Sign up with WeChat",
+    "WeDev_will_access_the_following_GitHub_information": "WeDev will access the following GitHub information",
+    "WeDev_will_access_the_following_wechat_information": "WeDev will access the following WeChat information",
+    "basic_profile": "Basic profile",
+    "public_repositories": "Public repositories",
+    "and_Gists": "and Gists",
+    "continue_with_github": "Continue with GitHub",
+    "chat_limit_reached": "Chat limit reached",
+    "chat_limit_reached_tips": "You have reached the limit of 3 free chats. Please login to continue using the chat feature.",
+    "login": "Login",
+    "close": "Close"
+  },
+  "sketch": {
+    "title": "Sketch Editor"
+  }
+}

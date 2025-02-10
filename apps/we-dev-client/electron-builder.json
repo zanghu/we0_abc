@@ -1,0 +1,46 @@
+{
+  "productName": "WeDev",
+  "appId": "com.wedev.app",
+  "directories": {
+    "output": "release"
+  },
+  "files": [
+    "dist/**/*",
+    "dist-electron/**/*"
+  ],
+  "mac": {
+    "icon": "build/icon.png",
+    "target": [
+      {
+        "target": "dir",
+        "arch": ["arm64"]
+      }
+    ],
+    "category": "public.app-category.developer-tools",
+    "identity": null,
+    "hardenedRuntime": false
+  },
+  "win": {
+    "icon": "build/icon.ico",
+    "target": [
+      "nsis",
+      "zip"
+    ]
+  },
+  "extraResources": [
+    {
+      "from": "/bin/zsh",
+      "to": "bin/zsh"
+    },
+    {
+      "from": "/usr/local/bin/npm",
+      "to": "bin/npm"
+    }
+  ],
+  "asar": true,
+  "asarUnpack": [
+    "dist-electron",
+    "dist/electron",
+    "node_modules/node-pty/**/*"
+  ]
+}
