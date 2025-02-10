@@ -12,7 +12,7 @@ Currently, Cursor, v0, and Bolt.new have impressive performance in web project g
 
 Supports browser-based debugging: Built-in WebContainer environment allows you to run a terminal in the browser, install and run npm and tool libraries.
 
-High-fidelity design restoration: Utilizes cutting-edge D2C technology to achieve 99% design restoration.
+High-fidelity design restoration: Utilizes cutting-edge D2C technology to achieve 90% design restoration.
 
 Supports importing historical projects: Unlike Bolt.new, which runs in a browser environment, We0 can directly open existing historical projects for secondary editing and debugging.
 
@@ -76,8 +76,7 @@ THIRD_API_KEY=
 # JWT_SECRET [Optional]
 JWT_SECRET=
 
-# MongoDB_URI
-MONGODB_URI=
+
 ```
 
 ## Build the Web Editor
@@ -96,49 +95,6 @@ Supports quick start from the root directory.
 "dev:client": "cd apps/we-dev-client  && pnpm dev",
 ```
 
-The repair process is as follows:
-
-1. Globally install the repair tool (Note: Install globally, not in the project!)
-
-```bash
-npm install electron-fix -g
-```
-
-2. Execute the repair command in the project root directory
-
-```bash
-electron-fix start
-```
-
-3. Re-run the installation command
-
-```bash
-pnpm install
-```
-
-### Node-pty Issue
-
-For different platforms, the compilation environment for node-pty needs to be modified.
-
-- Mac configuration modification:
-
-```json
-"postinstall": "electron-rebuild -f -w node-pty --arch=arm64"
-"mac": {
-      "target": "dir",
-      "arch": [
-        "arm64"
-      ]
-    }
-```
-
-## Development Standards
-
-The project directory structure is as follows:
-
-- apps
-  - we-dev-client：client（electron）
-  - we-dev-next：backend services
 
 ## How to Install and Use
 
