@@ -91,28 +91,7 @@ const EditorPreviewTabs: React.FC = () => {
     }
 
     try {
-      const cliPath = await findWeChatDevToolsPath();
-      const projectPath = await ipcRenderer.invoke(
-        "node-container:get-project-root"
-      );
-      const { lastGrandParentPath } = await ipcRenderer.invoke(
-        "node-container:get-parent-paths",
-        projectPath
-      );
-      console.log(lastGrandParentPath, "lastGrandParentPath");
-      // 这里考虑要不要升级一下动态js的脚手架 新增一个json作为动态js的表示符号
-      if (
-        getFiles().includes("index.js") &&
-        getFiles().includes("index.css") &&
-        getFiles().includes("index.wxml")
-      ) {
-        await executeCommand("npm install");
-        // 执行构建命令
-        await executeCommand("npm run start");
-        // 打开微信开发者工具
-        const command = `"${cliPath}" -o "${lastGrandParentPath}" --auto-port`;
-        await ipcRenderer.invoke("node-container:exec-command", command);
-      }
+      const cliPath = await findWeChatDevToolsPath();   
       if (getFiles().includes("app.json")) {
         const projectPath = await ipcRenderer.invoke(
           "node-container:get-project-root"
