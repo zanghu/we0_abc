@@ -9,7 +9,7 @@
 目前 cursor 、v0、bolt.new 在 web 项目生成有比较惊艳的表现。we0 项目有以下特点
 
 - 支持浏览器运行调试，内置 webContainer 环境可以让你在浏览器环境下运行终端，安装并运行 npm 和工具库
-- 还原高保真设计图，运用行业前沿的 D2C 技术，支持 99%设计稿还原。
+- 还原高保真设计图，运用行业前沿的 D2C 技术，支持 90%设计稿还原。
 - 支持历史项目引入，相较于 bolt.new 它运行在浏览器的环境下。we0 能够直接打开现有的历史项目，进行二次编辑和调试
 - 打通微信小程序开发者工具，能够直接通过点击预览吊起微信开发者工具并进行调试。
 - 多端支持 支持了 windows,mac 操作系统客户端下载，以及 web 容器运行场景，可以根据使用场景选用不同的终端
@@ -67,16 +67,7 @@ THIRD_API_URL=
 THIRD_API_KEY=
 # jwt 密钥 选填
 JWT_SECRET=
-# monogo地址
-MONGODB_URI=
-```
 
-## 构建 web 的编辑器
-
-```bash
-chmod +x scripts/wedev-build.sh
-
-./scripts/wedev-build.sh
 ```
 
 **快速启动的办法**
@@ -87,50 +78,13 @@ chmod +x scripts/wedev-build.sh
 "dev:client": "cd apps/we-dev-client  && pnpm dev",
 ```
 
-修复过程如下：
-
-1. 全局安装修复工具（注意是全局，不要装进项目！）
+## 构建脚本
 
 ```bash
-npm install electron-fix -g
+chmod +x scripts/wedev-build.sh
+
+./scripts/wedev-build.sh
 ```
-
-2. 在项目根目录执行修复命令
-
-```bash
-electron-fix start
-```
-
-3. 重新执行安装命令
-
-```bash
-pnpm install
-```
-
-### node-pty 问题
-
-对于不同的平台需要修改不同的 node-pty 编译环境
-
-- mac 配置修改：
-
-```json
-"postinstall": "electron-rebuild -f -w node-pty --arch=arm64"
-"mac": {
-      "target": "dir",
-      "arch": [
-        "arm64"
-      ]
-    }
-```
-
-## 开发规范
-
-本项目目录结构如下
-
-- apps
-  - we-dev-client：客户端（electron）
-  - we-dev-next：后端服务
-
 ## 如何安装使用
 
 客户端版本如何使用？
