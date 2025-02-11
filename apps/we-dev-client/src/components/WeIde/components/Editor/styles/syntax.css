@@ -83,14 +83,14 @@
 
 /* Selection */
 .cm-selectionBackground {
-  background: #3e4451 !important;
+  background: #000000 !important;
 }
 
 .cm-focused .cm-selectionBackground {
-  background: #3e4451 !important;
+  background:  #000000 !important;
 }
 
 /* Active line highlight */
 .cm-activeLine {
-  background: #282c34 !important;
+  background:  #000000  !important;
 }
