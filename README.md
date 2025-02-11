@@ -67,7 +67,7 @@ JWT_SECRET=
 
 # Servers apps/we-dev-next/.env.example
 
-# Third-Party Model URL [MUST*] (eg: https://api2.aigcbest.top/v1)
+# Third-Party Model URL [MUST*] (eg: https://your-one-api-domain/v1)
 THIRD_API_URL=
 
 # Third-Party Model API-Key [MUST*] (eg:sk-xxxx)
