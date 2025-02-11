@@ -67,7 +67,7 @@ JWT_SECRET=
 
 # Servers apps/we-dev-next/.env.example
 
-# Third-Party Model URL [MUST*] (eg: https://your-oneapi-domain/v1)
+# Third-Party Model URL [MUST*] (eg: https://api.openai.com/v1)
 THIRD_API_URL=
 
 # Third-Party Model API-Key [MUST*] (eg:sk-xxxx)
