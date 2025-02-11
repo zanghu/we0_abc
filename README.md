@@ -104,13 +104,18 @@ How to Use the Client Version?
   1. Go to https://we0.ai/.
   2. Select Download for Mac to download the installer.
   3. You might encounter an issue:
+  
      ![alt text](./docs/img/image-2.png)
+     
 - Open Launchpad, select Terminal, and enter:
-  `sudo spctl  --master-disable`
-  hen press Enter, enter your password (the password input is invisible), and press Enter again.
+  ```bash
+  sudo spctl  --master-disable
+  ```
+  then press Enter, enter your password (the password input is invisible), and press Enter again.
+  
   Next, open System Preferences, select Security & Privacy, then General, and you will see Anywhere selected.
-  ![alt text](./docs/img/image-3.png)
   Then open the file to install.
+  ![alt text](./docs/img/image-3.png)
 
 
 - If it still shows "Damaged and cannot be opened. You should move it to the Trash" 
@@ -133,6 +138,18 @@ How to Use the Client Version?
 
   Return to the terminal window, press Enter, and enter your system password to proceed.
 
+
 ## Contact US
 
 send email to <a href="mailto:enzuo@wegc.cn">enzuo@wegc.cn</a>
+
+
+## Star History
+
+<a href="https://star-history.com/?utm_source=bestxtools.com#we0-dev/we0&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=we0-dev/we0&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=we0-dev/we0&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=we0-dev/we0&type=Date" />
+ </picture>
+</a>
