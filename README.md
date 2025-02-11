@@ -128,7 +128,7 @@ How to Use the Client Version?
   Then open Finder, go to the Applications directory, find the software icon, and drag it into the terminal window. You will get a combination like this (as shown in the image):
 
   ```bash
-  sudo xattr -r -d com.apple.quarantine /Applications/WebStrom.app
+  sudo xattr -r -d com.apple.quarantine /Applications/WebStrom.app 
   ```
 
   Return to the terminal window, press Enter, and enter your system password to proceed.
