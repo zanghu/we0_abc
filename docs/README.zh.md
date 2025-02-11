@@ -64,7 +64,7 @@ JWT_SECRET=
 
 # 后端服务 apps/we-dev-next/.env.example
 
-# 第三方模型api 必填 例如 https://你的oneapi的域名/v1
+# 第三方模型api 必填 例如 https://api.openai.com/v1
 THIRD_API_URL=
 # 第三方模型api key 必填 例如 sk-xxxx
 THIRD_API_KEY=
