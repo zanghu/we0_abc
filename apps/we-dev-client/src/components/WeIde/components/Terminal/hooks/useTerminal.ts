@@ -4,68 +4,30 @@ import { FitAddon } from '@xterm/addon-fit';
 import { WebLinksAddon } from '@xterm/addon-web-links';
 import { useCommandHistory } from './useCommandHistory';
 import { executeCommand, waitCommand } from '../utils/commands';
-import { getTerminalTheme } from '../utils/theme';
 import { useFileStore } from '../../../stores/fileStore';
-import { Terminal } from '../index';
+import useThemeStore from '@/stores/themeSlice';
 
-// 定义终端主题
-const terminalTheme = {
-  foreground: '#333333',
-  background: '#ffffff',
-  cursor: '#333333',
-  cursorAccent: '#ffffff',
-  selection: '#add6ff80',
-  black: '#000000',
-  red: '#e51400',
-  green: '#008000',
-  yellow: '#795e25',
-  blue: '#0451a5',
-  magenta: '#811f3f',
-  cyan: '#007acc',
-  white: '#333333',
-  brightBlack: '#666666',
-  brightRed: '#cd3131',
-  brightGreen: '#008000',
-  brightYellow: '#795e25',
-  brightBlue: '#0451a5',
-  brightMagenta: '#811f3f',
-  brightCyan: '#007acc',
-  brightWhite: '#333333',
+// VSCode 风格的亮色主题
+const lightTheme = {
+  foreground: '#000000',
+  curosr: '#000000',
+  background: '#fefefe',
 };
 
-// 定义暗色主题
-const darkTerminalTheme = {
-  foreground: '#d4d4d4',
+// VSCode 风格的暗色主题
+const darkTheme = {
   background: '#1e1e1e',
-  cursor: '#d4d4d4',
-  cursorAccent: '#1e1e1e',
-  selection: '#264f78',
-  black: '#000000',
-  red: '#cd3131',
-  green: '#0dbc79',
-  yellow: '#e5e510',
-  blue: '#2472c8',
-  magenta: '#bc3fbc',
-  cyan: '#11a8cd',
-  white: '#e5e5e5',
-  brightBlack: '#666666',
-  brightRed: '#f14c4c',
-  brightGreen: '#23d18b',
-  brightYellow: '#f5f543',
-  brightBlue: '#3b8eea',
-  brightMagenta: '#d670d6',
-  brightCyan: '#29b8db',
-  brightWhite: '#e5e5e5',
+  foreground: '#ffffff',
 };
 
 export function useTerminal(containerRef: React.RefObject<HTMLDivElement>) {
   const [isReady, setIsReady] = useState(false);
-  const [isDark, setIsDark] = useState(false);
+    const { isDarkMode, toggleTheme, setTheme } = useThemeStore();
   const terminalRef = useRef<XTerm | null>(null);
   const fitAddonRef = useRef<FitAddon | null>(null);
   const { files, addError } = useFileStore();
 
-  const { history, addToHistory, getPrevious, getNext } = useCommandHistory();
+  const { addToHistory } = useCommandHistory();
 
   const writePrompt = useCallback(() => {
     if (terminalRef.current) {
@@ -75,7 +37,6 @@ export function useTerminal(containerRef: React.RefObject<HTMLDivElement>) {
 
   const handleCommand = useCallback(async (command: string) => {
     if (!terminalRef.current) return;
-
 
     const result = await executeCommand(command);
 
@@ -88,18 +49,16 @@ export function useTerminal(containerRef: React.RefObject<HTMLDivElement>) {
   useEffect(() => {
     if (!containerRef.current) return;
 
-
     const term = new XTerm({
       cursorBlink: true,
       convertEol: true,
-      theme: isDark ? darkTerminalTheme : terminalTheme,
+      theme: isDarkMode ? darkTheme : lightTheme,
       fontSize: 12,
       fontFamily: 'Menlo, Monaco, "Courier New", monospace',
       fontWeight: '500',
       letterSpacing: 0,
       lineHeight: 1.4,
     });
-
 
     const fitAddon = new FitAddon();
     const webLinksAddon = new WebLinksAddon();
@@ -152,7 +111,7 @@ export function useTerminal(containerRef: React.RefObject<HTMLDivElement>) {
       terminalRef.current = null;
       fitAddonRef.current = null;
     };
-  }, [handleCommand, writePrompt, addToHistory, isDark]);
+  }, [handleCommand, writePrompt, addToHistory, isDarkMode]);
 
   useEffect(() => {
     if (fitAddonRef.current && containerRef.current) {
@@ -167,21 +126,12 @@ export function useTerminal(containerRef: React.RefObject<HTMLDivElement>) {
     }
   }, [fitAddonRef.current]);
 
-  // 监听系统主题变化
+  // 监听主题变化
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    setIsDark(mediaQuery.matches);
-
-    const handler = (e: MediaQueryListEvent) => {
-      setIsDark(e.matches);
-      if (terminalRef.current) {
-        terminalRef.current.options.theme = e.matches ? darkTerminalTheme : terminalTheme;
-      }
-    };
-
-    mediaQuery.addEventListener('change', handler);
-    return () => mediaQuery.removeEventListener('change', handler);
-  }, []);
+    if (terminalRef.current) {
+      terminalRef.current.options.theme = isDarkMode ? darkTheme : lightTheme;
+    }
+  }, [isDarkMode]);
 
   return { isReady };
 }

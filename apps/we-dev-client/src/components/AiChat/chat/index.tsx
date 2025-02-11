@@ -129,12 +129,10 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
               ]);
             }
           }).catch((error) => {
-            console.error("Failed to fetch ollama server:", error);
-            toast.error('没有启用ollama服务')
+            console.warn("Failed to fetch ollama server:", error);
           });
       } catch (error) {
-        console.error("Failed to fetch ollama server:", error);
-        toast.error('没有启用ollama服务')
+        console.warn("Failed to fetch ollama server:", error);
       }
     }else{
       setModelOptions(modelOptions)
