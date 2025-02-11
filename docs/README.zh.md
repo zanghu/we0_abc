@@ -96,6 +96,7 @@ chmod +x scripts/wedev-build.sh
   1. 进入到https://we0.ai/ 页面
   2. 选择 Download for Mac 下载安装包
   3. 你可能会遇到问题
+     
      ![alt text](./img/image-2.png)
 
 - 打开【启动台】选择【终端】输入
@@ -107,9 +108,11 @@ chmod +x scripts/wedev-build.sh
   然后回车，继续输入密码（密码输入时是不可见的），然后回车。
   
   接着打开【系统偏好设置】，选择【安全性与隐私】，选择【通用】，可以看到【任何来源】已经选定。
+  
+  接着打开文件进行安装。
+  
   ![alt text](./img/image-3.png)
 
-  接着打开文件进行安装。
 
 - 发现还是显示“已损坏，无法打开。 您应该将它移到废纸篓”，
 
@@ -130,6 +133,18 @@ chmod +x scripts/wedev-build.sh
 
   回到终端窗口按回车，输入系统密码回车即可。
 
-## Contact US
+
+## 联系我们
 
 发送邮件到 <a href="mailto:enzuo@wegc.cn">enzuo@wegc.cn</a>
+
+
+## Star History
+
+<a href="https://star-history.com/?utm_source=bestxtools.com#we0-dev/we0&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=we0-dev/we0&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=we0-dev/we0&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=we0-dev/we0&type=Date" />
+ </picture>
+</a>
