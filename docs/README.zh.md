@@ -133,6 +133,9 @@ chmod +x scripts/wedev-build.sh
 
   回到终端窗口按回车，输入系统密码回车即可。
 
+## 问题
+- electron假如二次运行报错，请删除client workspace
+- electron假如启动的时候没有preview，请运行pnpm run electron:dev
 
 ## 联系我们
 
