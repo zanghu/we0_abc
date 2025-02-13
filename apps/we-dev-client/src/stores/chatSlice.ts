@@ -51,7 +51,7 @@ const useChatStore = create<ChatState>((set) => ({
       uploadedImages: state.uploadedImages.filter((img) => img.id !== id),
     })),
   clearImages: () => set({ uploadedImages: [] }),
-  modelOptions,
+  modelOptions: [],
   ollamaConfig: {
     url: '',
     apiKey: '',

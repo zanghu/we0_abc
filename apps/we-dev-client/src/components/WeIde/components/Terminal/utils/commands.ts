@@ -3,7 +3,6 @@ import { updateFileSystemNow } from '../../../services';
 import { getWebContainerInstance } from '../../../services/webcontainer';
 import { IPty } from 'node-pty';
 import { getNodeContainerInstance } from '../../../services/nodecontainer';
-import { isE } from '@/components/SketchEditor/src/math/matrix';
 
 interface CommandResult {
   output: string[];
