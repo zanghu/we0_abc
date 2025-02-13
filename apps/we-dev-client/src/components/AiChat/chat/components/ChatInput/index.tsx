@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import useChatModeStore from '../../../../../stores/chatModeSlice';
 import useChatStore from "@/stores/chatSlice";
 import useThemeStore from "@/stores/themeSlice";
+import { v4 as uuidv4 } from 'uuid';
 // import type { ModelOption } from './UploadButtons';
 
 
@@ -309,7 +310,7 @@ export const ChatInput: React.FC<ChatInputPropsType> = ({
 
             const url = await uploadImage(file);
             return {
-              id: crypto.randomUUID(),
+              id: uuidv4(),
               file,
               url,
               localUrl: URL.createObjectURL(file),

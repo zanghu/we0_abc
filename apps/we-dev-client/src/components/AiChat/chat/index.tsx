@@ -478,7 +478,7 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
         validFiles.map(async (file) => {
           const url = await uploadImage(file);
           return {
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             file,
             url,
             localUrl: URL.createObjectURL(file),
@@ -579,7 +579,7 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
 
             const url = await uploadImage(file);
             return {
-              id: crypto.randomUUID(),
+              id: uuidv4(),
               file,
               url,
               localUrl: URL.createObjectURL(file),
@@ -643,7 +643,7 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
 
           const url = await uploadImage(file);
           return {
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             file,
             url,
             localUrl: URL.createObjectURL(file),
