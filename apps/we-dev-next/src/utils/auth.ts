@@ -1,7 +1,7 @@
 import * as jose from "jose";
 
 export const getJwtSecret = () => {
-  return new TextEncoder().encode(process.env.JWT_SECRET || "test123456");
+  return new TextEncoder().encode(process.env.JWT_SECRET);
 };
 
 export const verifyToken = async (token: string) => {

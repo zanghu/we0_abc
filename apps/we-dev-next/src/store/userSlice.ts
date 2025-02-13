@@ -51,6 +51,8 @@ export const useUserStore = create<UserState>((set, get) => ({
   setUser: (user) => set({ user }),
   setToken: (token) => {
     localStorage.setItem("token", token);
+    localStorage.setItem("rememberMe", "true");
+    localStorage.setItem("user", JSON.stringify(get().user));
     set({ token });
   },
   getToken: () => {
@@ -60,6 +62,8 @@ export const useUserStore = create<UserState>((set, get) => ({
   logout: () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    localStorage.removeItem("rememberMe");
+
     set({ user: null, token: null });
   },
 }));

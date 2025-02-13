@@ -363,7 +363,7 @@ export const ChatInput: React.FC<ChatInputPropsType> = ({
 
   return (
     <div className="px-1 py-2 ">
-      <div className="max-w-[640px] w-full mx-auto bg-transparent dark:bg-[rgba(30,30,30)]">
+      <div className="max-w-[640px] w-full mx-auto bg-[rgba(243,243,243)] dark:bg-[rgba(30,30,30)]">
         <ErrorDisplay
           errors={errors}
           onAttemptFix={async (error, index) => {

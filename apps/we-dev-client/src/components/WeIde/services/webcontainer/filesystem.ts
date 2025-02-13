@@ -134,6 +134,11 @@ const readDirRecursive = async (
 
 // 创建防抖版本的 updateFileSystemNow
 const debouncedUpdateFileSystem = debounce(async () => {
+  if((window as any).isLoading) {
+    console.log('isLoading555');
+    return
+  }
+  console.log('updateFileSystemNow555');
   const { updateContent, files: filesObj } = useFileStore.getState();
   const instance = await getWebContainerInstance();
   if (!instance) return;

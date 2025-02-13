@@ -38,22 +38,17 @@ const useUserStore = create<UserState>()(
       isLoginModalOpen: false,
 
       setRememberMe: (remember) => {
-        if (window?.electron?.ipcRenderer) {
-          // 在 Electron 环境中，使用 localStorage 存储
-          localStorage.setItem("rememberMe", remember.toString());
-        }
+        localStorage.setItem("rememberMe", remember.toString());
         set({ rememberMe: remember });
       },
 
       setUser: (user) => {
-        if (window?.electron?.ipcRenderer) {
-          // 在 Electron 环境中，使用 localStorage 存储
-          if (user) {
-            localStorage.setItem("user", JSON.stringify(user));
-          } else {
-            localStorage.removeItem("user");
-          }
+        if (user) {
+          localStorage.setItem("user", JSON.stringify(user));
+        } else {
+          localStorage.removeItem("user");
         }
+
         set(() => ({
           user,
           isAuthenticated: !!user,
@@ -61,23 +56,18 @@ const useUserStore = create<UserState>()(
       },
 
       setToken: (token) => {
-        if (window?.electron?.ipcRenderer) {
-          // 在 Electron 环境中，使用 localStorage 存储
-          if (token) {
-            localStorage.setItem("token", token);
-          } else {
-            localStorage.removeItem("token");
-          }
+        if (token) {
+          localStorage.setItem("token", token);
+        } else {
+          localStorage.removeItem("token");
         }
         set(() => ({ token }));
       },
 
       login: (user, token) => {
-        if (window?.electron?.ipcRenderer) {
-          // 在 Electron 环境中，使用 localStorage 存储
-          localStorage.setItem("user", JSON.stringify(user));
-          localStorage.setItem("token", token);
-        }
+        localStorage.setItem("user", JSON.stringify(user));
+        localStorage.setItem("token", token);
+
         set(() => ({
           user,
           token,
@@ -87,12 +77,9 @@ const useUserStore = create<UserState>()(
       },
 
       logout: () => {
-        if (window?.electron?.ipcRenderer) {
-          // 在 Electron 环境中，清除 localStorage
-          localStorage.removeItem("user");
-          localStorage.removeItem("token");
-          localStorage.removeItem("rememberMe");
-        }
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+        localStorage.removeItem("rememberMe");
         set(() => ({
           user: null,
           token: null,
@@ -104,10 +91,8 @@ const useUserStore = create<UserState>()(
       updateUser: (userData) =>
         set((state) => {
           const newUser = state.user ? { ...state.user, ...userData } : null;
-          if (window?.electron?.ipcRenderer && newUser) {
-            // 在 Electron 环境中，更新 localStorage
-            localStorage.setItem("user", JSON.stringify(newUser));
-          }
+          localStorage.setItem("user", JSON.stringify(newUser));
+
           return { user: newUser };
         }),
 
@@ -133,16 +118,14 @@ const useUserStore = create<UserState>()(
       version: 1,
       // 初始化时从 localStorage 恢复状态
       onRehydrateStorage: () => (state) => {
-        if (window?.electron?.ipcRenderer) {
-          const rememberMe = localStorage.getItem("rememberMe") === "true";
-          if (rememberMe) {
-            const storedUser = localStorage.getItem("user");
-            const storedToken = localStorage.getItem("token");
-            if (storedUser && storedToken) {
-              state?.setUser(JSON.parse(storedUser));
-              state?.setToken(storedToken);
-              state?.setRememberMe(true);
-            }
+        const rememberMe = localStorage.getItem("rememberMe") === "true";
+        if (rememberMe) {
+          const storedUser = localStorage.getItem("user");
+          const storedToken = localStorage.getItem("token");
+          if (storedUser && storedToken) {
+            state?.setUser(JSON.parse(storedUser));
+            state?.setToken(storedToken);
+            state?.setRememberMe(true);
           }
         }
       },

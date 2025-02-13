@@ -138,12 +138,7 @@ export function Sidebar({
         <div
           className="p-3 cursor-pointer hover:bg-white/5"
           onClick={() => {
-            if (isElectron) {
-              openLoginModal();
-            } else {
-              // 当前页面跳转到
-              window.location.href = "/login";
-            }
+            openLoginModal();
           }}
         >
           <div className="flex items-center gap-2">
@@ -176,7 +171,9 @@ export function Sidebar({
             <div className="text-white text-[14px] font-medium">
               {user?.username}
             </div>
-            <div className="text-[13px] text-gray-400 translate">{t("sidebar.personal_plan")}</div>
+            <div className="text-[13px] text-gray-400 translate">
+              {t("sidebar.personal_plan")}
+            </div>
           </div>
           <button
             onClick={handleLogout}
@@ -219,7 +216,9 @@ export function Sidebar({
       >
         {/* Logo */}
         <div className="p-3">
-          <h1 className="text-gray-900 dark:text-white text-[14px] font-medium">WeDev</h1>
+          <h1 className="text-gray-900 dark:text-white text-[14px] font-medium">
+            WeDev
+          </h1>
         </div>
 
         {/* New Chat Button */}
@@ -340,41 +339,8 @@ export function Sidebar({
             </button>
           </div>
 
-          {/* User Profile */}
-          <div
-            className="p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-white/5"
-            onClick={() => openSettings(TAB_KEYS.TOKENS)}
-          >
-            <div className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-full bg-purple-500 dark:bg-purple-600 flex items-center justify-center text-white text-[14px] font-medium">
-                {user?.username?.slice(0, 2).toUpperCase()}
-              </div>
-              <div className="flex-1">
-                <div className="text-gray-900 dark:text-white text-[14px] font-medium">
-                  {user?.username}
-                </div>
-                <div className="text-[13px] text-gray-500 dark:text-gray-400 translate">{plan}</div>
-              </div>
-              <button
-                onClick={handleLogout}
-                className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white"
-              >
-                <svg
-                  className="w-[16px] h-[16px]"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                  />
-                </svg>
-              </button>
-            </div>
-          </div>
+          {/* User Profile - 使用新的渲染方法 */}
+          {renderUserSection()}
         </div>
       </div>
 
