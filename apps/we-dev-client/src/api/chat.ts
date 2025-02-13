@@ -8,19 +8,20 @@ export const chat = async (messages: any) => {
   return data;
 };
 export const uploadImage = async (file: File) => {
-  // 使用FileReader将文件转换为Base64
-  return new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    
-    reader.onload = () => {
-      const base64String = reader.result as string;
-      resolve(base64String);
-    };
-    
-    reader.onerror = () => {
-      reject(new Error('Failed to convert image to Base64'));
-    };
+  const formData = new FormData();
+  formData.append("file", file);
 
-    reader.readAsDataURL(file);
+  const response = await fetch(process.env.APP_BASE_URL + "/api/upload", {
+
+    method: "POST",
+    body: formData,
   });
+
+  if (!response.ok) {
+    throw new Error("Failed to upload image");
+  }
+
+  const data = await response.json();
+  console.log(data, "data");
+  return data.data.data.url; // 假设返回的是 { url: "图片URL" }
 };

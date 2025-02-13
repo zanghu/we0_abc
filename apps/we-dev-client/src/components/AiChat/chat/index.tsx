@@ -402,11 +402,10 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
   }, [isLoading, files])
 
   useEffect(() => {
-    if (Date.now() - parseTimeRef.current > 500 && !isLoading) {
+    if (Date.now() - parseTimeRef.current > 500 && isLoading) {
       parseTimeRef.current = Date.now();
 
       const needParseMessages = messages.filter((m) => !refUuidMessages.current.includes(m.id));
-      refUuidMessages.current = [...refUuidMessages.current, ...needParseMessages.slice(0, needParseMessages.length - 1).map((m) => m.id)];
       parseMessages(needParseMessages as any);
     }
     if (errors.length > 0 && isLoading) {
