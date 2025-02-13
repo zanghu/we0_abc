@@ -139,6 +139,10 @@ How to Use the Client Version?
   Return to the terminal window, press Enter, and enter your system password to proceed.
 
 
+## Question
+- If electron reports an error during the second run, please delete the client workspace
+- electron If there is no preview when starting, run pnpm run electron:dev
+
 ## Contact US
 
 send email to <a href="mailto:enzuo@wegc.cn">enzuo@wegc.cn</a>

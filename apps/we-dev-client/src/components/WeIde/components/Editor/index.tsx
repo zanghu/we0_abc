@@ -38,10 +38,13 @@ export const Editor = ({ fileName, initialLine }: EditorProps) => {
       className={`
         editor-container h-full w-full overflow-hidden
         [&_.cm-editor]:!bg-[#ffffff] [&_.cm-editor]:dark:!bg-[#1e1e1e]
+        [&_.cm-scroller]:!font-mono
+        
         /* 行号和边栏区域 */
         [&_.cm-gutters]:!bg-[#f5f5f5] [&_.cm-gutters]:dark:!bg-[#1e1e1e]
         [&_.cm-gutters]:border-r [&_.cm-gutters]:border-[#e5e5e5] [&_.cm-gutters]:dark:border-[#3c3c3c]
         [&_.cm-lineNumbers]:!text-[#237893] [&_.cm-lineNumbers]:dark:!text-[#c5c5c5]
+        [&_.cm-gutterElement]:pl-[10px] [&_.cm-gutterElement]:min-w-[40px]
         
         /* 活动行高亮 */
         [&_.cm-activeLine]:!bg-[#f3f3f3] [&_.cm-activeLine]:dark:!bg-[#2c2c2c]

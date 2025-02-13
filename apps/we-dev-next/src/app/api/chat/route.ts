@@ -1,3 +1,4 @@
+import dbConnect from "@/utils/dbConnect";
 import { Messages } from "./action";
 import { hasEnoughTokens } from "@/utils/tokens";
 import { handleChatMode } from "./handlers/chatHandler";
@@ -16,6 +17,7 @@ interface ChatRequest {
 
 export async function POST(request: Request) {
   try {
+    // await dbConnect();
     const { messages, model, mode = ChatMode.Builder } = (await request.json()) as ChatRequest;
     const userId = request.headers.get("userId");
 

@@ -15,6 +15,7 @@ let nowTerminal: Terminal | null = null;
 
 let nowProcessId: string | null = null;
 
+let startTip = ''
 
 let initId = ''
 let ptyProcess: IPty | null = null;
@@ -56,6 +57,9 @@ export async function waitCommand(terminal: Terminal, addError?: (error: any) =>
 
 export async function webWaitCommand(terminal: Terminal, addError?: (error: any) => void) {
   nowTerminal = terminal;
+  if(!window?.isElectron){
+    terminal.write('please wait...\n')
+  }
   const instance = await getWebContainerInstance();
   const process = await instance?.spawn('/bin/jsh', [], {
     terminal: {
@@ -77,8 +81,13 @@ export async function webWaitCommand(terminal: Terminal, addError?: (error: any)
             severity: 'error',
           })
         }
+        if(data.includes('run `npm fund` for details')){
+          // 退出当前
+          instance?.spawn('exit')
+        }
         if (!initId) {
           initId = data?.split('/')[1].split('[39m')[0].trim()
+          startTip = data.replaceAll(initId, 'weDev')
         }
         updateFileSystemNow();
         terminal.write(data.replaceAll(initId, 'weDev'))
@@ -87,6 +96,7 @@ export async function webWaitCommand(terminal: Terminal, addError?: (error: any)
   );
 
   terminal.onData((data) => {
+    console.log(data, 'data2');
     input?.write(data)
   });
 }
@@ -119,7 +129,6 @@ export async function newTerminal() {
     nowProcessId = processId;
 
     electron.ipcRenderer.on(`terminal-output-${processId}`, (data: string) => {
-      updateFileSystemNow();
       terminal.write(data);
       if (data.includes('error') && AddErrorFunc) {
 
@@ -205,7 +214,6 @@ export async function nodeWaitCommand(terminal: Terminal, addError?: (error: any
 
   // 监听终端输入
   terminal.onData((data) => {
-    console.log('data', data);
     electron.ipcRenderer.invoke('terminal:write', nowProcessId, data);
 
   });
@@ -251,6 +259,14 @@ export async function executeCommand(command: string): Promise<CommandResult> {
     const outputArray: string[] = [];
     for await (const chunk of output) {
       outputArray.push(chunk);
+      if(chunk.includes('run `npm fund` for details') || chunk.includes('looking for funding')){
+
+        setTimeout(async () => {
+
+          nowTerminal.write("If the system fails to exit automatically, please exit manually");
+
+        }, 1000)
+      }
       if (nowTerminal) {
         nowTerminal.write(chunk);
       }

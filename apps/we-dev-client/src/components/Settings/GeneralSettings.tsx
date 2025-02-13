@@ -9,14 +9,12 @@ export function GeneralSettings() {
   const { t } = useTranslation();
   const { setOllamaConfig, ollamaConfig } = useChatStore();
   const { isDarkMode, toggleTheme, setTheme } = useThemeStore();
-  const [activeTab, setActiveTab] = useState("general");
+  const [activeTab, setActiveTab] = useState('general');
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState(
-    JSON.parse(localStorage.getItem("settingsConfig") || "{}")
-  );
+  const [formData, setFormData] = useState(JSON.parse(localStorage.getItem('settingsConfig') || '{}'));
 
   useEffect(() => {
-    localStorage.setItem("settingsConfig", JSON.stringify(formData));
+     localStorage.setItem('settingsConfig', JSON.stringify(formData));
   }, [formData]);
 
   const [showPassword, setShowPassword] = useState(false);
@@ -24,7 +22,7 @@ export function GeneralSettings() {
 
   // 初始化时加载已保存的配置
   useEffect(() => {
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       ollamaUrl: ollamaConfig.url || "http://localhost:11434",
       apiKey: ollamaConfig.apiKey || "",
@@ -33,23 +31,21 @@ export function GeneralSettings() {
 
   // 组件加载时从本地存储读取主题设置
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme") || "dark";
+    const savedTheme = localStorage.getItem('theme') || 'dark';
     if (savedTheme) {
-      setTheme(savedTheme === "dark");
+      setTheme(savedTheme === 'dark');
     } else {
       // 如果没有保存的主题设置，则使用系统主题
-      const prefersDark = window.matchMedia(
-        "(prefers-color-scheme: dark)"
-      ).matches;
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       setTheme(prefersDark);
-      localStorage.setItem("theme", prefersDark ? "dark" : "light");
+      localStorage.setItem('theme', prefersDark ? 'dark' : 'light');
     }
   }, []);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
+    
     try {
       // 保存到 store
       setOllamaConfig({
@@ -58,19 +54,19 @@ export function GeneralSettings() {
       });
 
       // 保存到 localStorage
-      localStorage.setItem(
-        "ollamaConfig",
-        JSON.stringify({
-          url: formData.ollamaUrl || "http://localhost:11434",
-          apiKey: formData.apiKey,
-        })
-      );
+      localStorage.setItem('ollamaConfig', JSON.stringify({
+        url: formData.ollamaUrl || "http://localhost:11434",
+        apiKey: formData.apiKey,
+      }));
 
-      toast("设置已保存", {
+      toast('设置已保存', {
+        type: 'success',
         position: "top-center",
+        autoClose: 2000,
+        theme: isDarkMode ? 'dark' : 'light',
         style: {
           zIndex: 100000,
-        },
+        }
       });
     } catch (error) {
       // 即使出错也保存设置
@@ -79,13 +75,12 @@ export function GeneralSettings() {
         apiKey: formData.apiKey,
       });
 
-      localStorage.setItem(
-        "ollamaConfig",
-        JSON.stringify({
-          url: formData.ollamaUrl || "http://localhost:11434",
-          apiKey: formData.apiKey,
-        })
-      );
+      localStorage.setItem('ollamaConfig', JSON.stringify({
+        url: formData.ollamaUrl || "http://localhost:11434",
+        apiKey: formData.apiKey,
+      }));
+
+     
     } finally {
       setLoading(false);
     }
@@ -94,7 +89,7 @@ export function GeneralSettings() {
   // 修改主题切换处理函数
   const handleThemeToggle = () => {
     toggleTheme();
-    localStorage.setItem("theme", !isDarkMode ? "dark" : "light");
+    localStorage.setItem('theme', !isDarkMode ? 'dark' : 'light');
   };
 
   return (
@@ -103,11 +98,11 @@ export function GeneralSettings() {
         <div className="border-b border-border">
           <button
             className={`px-3 py-1.5 text-sm ${
-              activeTab === "general"
-                ? "text-foreground border-b-2 border-blue-500"
-                : "text-gray-400 hover:text-foreground"
+              activeTab === 'general'
+                ? 'text-foreground border-b-2 border-blue-500'
+                : 'text-gray-400 hover:text-foreground'
             }`}
-            onClick={() => setActiveTab("general")}
+            onClick={() => setActiveTab('general')}
           >
             {t("settings.General")}
           </button>
@@ -127,34 +122,18 @@ export function GeneralSettings() {
               >
                 {isDarkMode ? (
                   <>
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                        d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" 
                       />
                     </svg>
                     <span>暗黑模式</span>
                   </>
                 ) : (
                   <>
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707"
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707" 
                       />
                     </svg>
                     <span>明亮模式</span>
@@ -166,30 +145,24 @@ export function GeneralSettings() {
 
           {/* Language Select */}
           <div className="relative">
-            <label className="block text-gray-300 mb-1.5 text-sm">
-              {t("settings.Language")}
-            </label>
+            <label className="block text-gray-300 mb-1.5 text-sm">{t("settings.Language")}</label>
             <div className="relative">
               <button
                 type="button"
                 className="w-28 px-2.5 py-1.5 bg-white dark:bg-[#1e1e1e] border border-border rounded-md text-foreground text-left flex justify-between items-center text-sm"
                 onClick={() => setLanguageOpen(!languageOpen)}
               >
-                {formData.language === "en" ? "English" : "中文"}
+                
+                {formData.language === 'en' ? 'English' : '中文'}
                 <svg
                   className={`w-3.5 h-3.5 transition-transform ${
-                    languageOpen ? "transform rotate-180" : ""
+                    languageOpen ? 'transform rotate-180' : ''
                   }`}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
               {languageOpen && (
@@ -198,10 +171,10 @@ export function GeneralSettings() {
                     type="button"
                     className="w-full px-2.5 py-1.5 text-left hover:bg-gray-100 dark:hover:bg-gray-700 text-sm text-foreground"
                     onClick={() => {
-                      setFormData({ ...formData, language: "en" });
+                      setFormData({ ...formData, language: 'en' });
                       setLanguageOpen(false);
-                      i18n.changeLanguage("en");
-                      localStorage.setItem("language", "en");
+                      i18n.changeLanguage('en');
+                      localStorage.setItem('language', 'en');
                     }}
                   >
                     English
@@ -210,10 +183,10 @@ export function GeneralSettings() {
                     type="button"
                     className="w-full px-2.5 py-1.5 text-left hover:bg-gray-100 dark:hover:bg-gray-700 text-sm text-foreground"
                     onClick={() => {
-                      setFormData({ ...formData, language: "zh" });
+                      setFormData({ ...formData, language: 'zh' });
                       setLanguageOpen(false);
-                      i18n.changeLanguage("zh");
-                      localStorage.setItem("language", "zh");
+                      i18n.changeLanguage('zh');
+                      localStorage.setItem('language', 'zh');
                     }}
                   >
                     中文
@@ -232,31 +205,26 @@ export function GeneralSettings() {
               <input
                 type="text"
                 placeholder="http://localhost:11434"
-                defaultValue={"http://localhost:11434"}
-                value={formData.ollamaUrl}
-                onChange={(e) =>
-                  setFormData({ ...formData, ollamaUrl: e.target.value })
-                }
+                value={formData.ollamaUrl || "http://localhost:11434"}
+                onChange={(e) => setFormData({ ...formData, ollamaUrl: e.target.value })}
                 className="w-full px-2.5 py-1.5 bg-white dark:bg-[#1e1e1e] border border-border rounded-md text-foreground focus:outline-none focus:border-blue-500 text-sm"
               />
             </div>
           )}
 
           {/* API Key Input */}
-          {window.electron && (
+           {window.electron && (
             <div>
               <label className="block text-gray-500 dark:text-gray-300 mb-1.5 text-sm">
                 API Key
               </label>
               <div className="relative">
                 <input
-                  type={showPassword ? "text" : "password"}
+                  type={showPassword ? 'text' : 'password'}
                   // required
                   placeholder={t("settings.keyPlaceholder")}
                   value={formData.apiKey}
-                  onChange={(e) =>
-                    setFormData({ ...formData, apiKey: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, apiKey: e.target.value })}
                   className="w-full px-2.5 py-1.5 bg-white dark:bg-[#1e1e1e] border border-border rounded-md text-foreground focus:outline-none focus:border-blue-500 pr-8 text-sm"
                 />
                 <button
@@ -265,44 +233,19 @@ export function GeneralSettings() {
                   className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-foreground"
                 >
                   {showPassword ? (
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                      />
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                     </svg>
                   ) : (
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
-                      />
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
                     </svg>
                   )}
                 </button>
               </div>
-            </div>
-          )}
+            </div>)
+          }
         </form>
       </div>
 
@@ -313,23 +256,12 @@ export function GeneralSettings() {
           disabled={loading}
           onClick={handleSave}
           className={`px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-md flex items-center text-sm transition-colors ${
-            loading ? "opacity-50 cursor-not-allowed" : ""
+            loading ? 'opacity-50 cursor-not-allowed' : ''
           }`}
         >
           {loading && (
-            <svg
-              className="animate-spin -ml-1 mr-2 h-3.5 w-3.5 text-white"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              />
+            <svg className="animate-spin -ml-1 mr-2 h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path
                 className="opacity-75"
                 fill="currentColor"

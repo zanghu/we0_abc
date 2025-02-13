@@ -3,7 +3,7 @@ import { useChat } from "ai/react";
 import { toast } from "react-toastify";
 import { uploadImage } from "@/api/chat";
 // import { useChatStore } from "../store/chatStore";
-import useChatStore, { modelOptions } from "../../../stores/chatSlice";
+import useChatStore from "../../../stores/chatSlice";
 import { useFileStore } from "../../WeIde/stores/fileStore";
 import { db } from "../../../utils/indexDB";
 import { v4 as uuidv4 } from "uuid";
@@ -84,6 +84,7 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
     removeImage,
     clearImages,
     ollamaConfig,
+    modelOptions,
     setModelOptions,
   } = useChatStore();
   const filesInitObj = {} as Record<string, string>;
@@ -129,13 +130,13 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
               ]);
             }
           }).catch((error) => {
-            console.warn("Failed to fetch ollama server:", error);
+            console.error("Failed to fetch ollama server:", error);
+            toast.error('没有启用ollama服务')
           });
       } catch (error) {
-        console.warn("Failed to fetch ollama server:", error);
+        console.error("Failed to fetch ollama server:", error);
+        toast.error('没有启用ollama服务')
       }
-    }else{
-      setModelOptions(modelOptions)
     }
   }, [ollamaConfig]);
 
@@ -401,11 +402,10 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
   }, [isLoading, files])
 
   useEffect(() => {
-    if (Date.now() - parseTimeRef.current > 500 || !isLoading) {
+    if (Date.now() - parseTimeRef.current > 500 && isLoading) {
       parseTimeRef.current = Date.now();
 
       const needParseMessages = messages.filter((m) => !refUuidMessages.current.includes(m.id));
-      refUuidMessages.current = [...refUuidMessages.current, ...needParseMessages.slice(0, needParseMessages.length - 1).map((m) => m.id)];
       parseMessages(needParseMessages as any);
     }
     if (errors.length > 0 && isLoading) {
@@ -476,9 +476,8 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
       const uploadResults = await Promise.all(
         validFiles.map(async (file) => {
           const url = await uploadImage(file);
-          console.log(url, "url");
           return {
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             file,
             url,
             localUrl: URL.createObjectURL(file),
@@ -579,7 +578,7 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
 
             const url = await uploadImage(file);
             return {
-              id: crypto.randomUUID(),
+              id: uuidv4(),
               file,
               url,
               localUrl: URL.createObjectURL(file),
@@ -643,7 +642,7 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
 
           const url = await uploadImage(file);
           return {
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             file,
             url,
             localUrl: URL.createObjectURL(file),
