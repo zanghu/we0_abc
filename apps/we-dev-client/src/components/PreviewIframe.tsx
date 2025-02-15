@@ -1,18 +1,42 @@
 import { useEffect, useState, useRef } from "react";
 import { getContainerInstance } from "./WeIde/services";
+import { Smartphone, Tablet, Laptop, Monitor, ChevronDown } from "lucide-react";
 
 interface PreviewIframeProps {
   setShowIframe: (show: boolean) => void;
   isMinPrograme: boolean;
 }
+interface WindowSize {
+  name: string;
+  width: number;
+  height: number;
+  icon: React.ComponentType<{ size?: string | number }>;
+}
+const WINDOW_SIZES: WindowSize[] = [
+  { name: "Mobile", width: 375, height: 667, icon: Smartphone },
+  {
+    name: "Tablet",
+    width: Number((768 / 1.5).toFixed(0)),
+    height: Number((1024 / 1.5).toFixed(0)),
+    icon: Tablet,
+  },
+  { name: "Laptop", width: 1366, height: 768, icon: Laptop },
+  { name: "Desktop", width: 1920 / 1.5, height: 1080 / 1.5, icon: Monitor },
+];
 
-const PreviewIframe: React.FC<PreviewIframeProps> = ({ setShowIframe, isMinPrograme }) => {
+const PreviewIframe: React.FC<PreviewIframeProps> = ({
+  setShowIframe,
+  isMinPrograme,
+}) => {
   const [url, setUrl] = useState<string>("");
   const [port, setPort] = useState<string>("");
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [scale, setScale] = useState<number>(1);
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [selectedSize, setSelectedSize] = useState<WindowSize>(WINDOW_SIZES[0]);
+  const [isWindowSizeDropdownOpen, setIsWindowSizeDropdownOpen] =
+    useState(false);
 
   useEffect(() => {
     (async () => {
@@ -33,8 +57,7 @@ const PreviewIframe: React.FC<PreviewIframeProps> = ({ setShowIframe, isMinProgr
     }
   };
 
-  const displayUrl = port ? `http://localhost:${port}` : "暂时没有服务运行";
-
+  const displayUrl = port ? `http://localhost:${port}` : (isMinPrograme ? '可打开微信小程序开发者工具预览' : '暂未有服务运行');
   const handleWheel = (e: WheelEvent) => {
     if (e.ctrlKey) {
       e.preventDefault();
@@ -101,10 +124,11 @@ const PreviewIframe: React.FC<PreviewIframeProps> = ({ setShowIframe, isMinProgr
   };
 
   const openExternal = () => {
-      // window.open('http://localhost:5174/');
-      // window.open(url, "_blank", "noopener,noreferrer");
-      window.electron.ipcRenderer.send("open:external:url", "http://localhost:5174/");
-  }
+    window.electron.ipcRenderer.send(
+      "open:external:url",
+      "http://localhost:5174/"
+    );
+  };
 
   return (
     <div className="preview-container w-full h-full relative flex flex-col overflow-hidden">
@@ -112,7 +136,51 @@ const PreviewIframe: React.FC<PreviewIframeProps> = ({ setShowIframe, isMinProgr
         <div className="flex space-x-1.5">
           <div className="w-3 h-3 rounded-full bg-red-500"></div>
           <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-          <div className="w-3 h-3 rounded-full bg-green-500" onClick={openExternal}></div>
+          <div
+            className="w-3 h-3 rounded-full bg-green-500"
+            onClick={openExternal}
+          ></div>
+        </div>
+        <div className="relative">
+          <button
+            className="ml-2 p-1.5 rounded hover:bg-[#2c2c2c] text-gray-400 hover:text-gray-200 flex items-center gap-2"
+            onClick={() =>
+              setIsWindowSizeDropdownOpen(!isWindowSizeDropdownOpen)
+            }
+          >
+            <selectedSize.icon size={16} />
+            <ChevronDown size={16} />
+          </button>
+          {isWindowSizeDropdownOpen && (
+            <>
+              <div
+                className="fixed inset-0 z-50"
+                onClick={() => setIsWindowSizeDropdownOpen(false)}
+              />
+              <div className="absolute top-8 left-0 mt-2 z-50 min-w-[240px] bg-white dark:bg-black rounded-xl shadow-2xl border border-[#E5E7EB] dark:border-[rgba(255,255,255,0.1)] overflow-hidden">
+                {WINDOW_SIZES.map((size) => (
+                  <button
+                    key={size.name}
+                    className="w-full px-4 py-3.5 text-left text-[#111827] dark:text-gray-300 text-sm whitespace-nowrap flex items-center gap-3 group hover:bg-[#F5EEFF] dark:hover:bg-gray-900 bg-white dark:bg-black"
+                    onClick={() => {
+                      setSelectedSize(size);
+                      setIsWindowSizeDropdownOpen(false);
+                    }}
+                  >
+                    <size.icon size={20} />
+                    <div className="flex flex-col">
+                      <span className="font-medium group-hover:text-[#6D28D9] dark:group-hover:text-[#6D28D9] transition-colors duration-200">
+                        {size.name}
+                      </span>
+                      <span className="text-xs text-[#6B7280] dark:text-gray-400 group-hover:text-[#6D28D9] dark:group-hover:text-[#6D28D9] transition-colors duration-200">
+                        {size.width} × {size.height}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
         </div>
         <div className="flex-1 ml-4 flex items-center">
           <div className="px-3 py-1 rounded-md text-sm text-gray-50 border bg-[#2c2c2c] border-black w-full truncate">
@@ -186,27 +254,39 @@ const PreviewIframe: React.FC<PreviewIframeProps> = ({ setShowIframe, isMinProgr
 
       <div
         ref={containerRef}
-        className="flex-1 relative bg-white overflow-hidden rounded-b-lg "
+        className="flex-1 relative bg-white overflow-hidden rounded-b-lg flex items-center justify-center"
         style={{
           cursor: isDragging ? "grabbing" : "grab",
         }}
       >
-        <iframe
-          ref={iframeRef}
-          src={url}
-          className="w-full h-full border-none rounded-b-lg bg-white origin-center overflow-hidden"
+        <div
+          className="bg-white transition-all duration-200 origin-center"
           style={{
-            minHeight: "400px",
-            transition: "transform 0.1s ease",
+            width: `${selectedSize.width}px`,
+            height: `${selectedSize.height}px`,
             transform: `scale(${scale})`,
-            width: `100%`,
-            height: `100%`,
+
           }}
-          title="preview"
-          sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-          allow="cross-origin-isolated"
-        />
-        {!url && (
+        >
+          <iframe
+            ref={iframeRef}
+            src={url}
+            className="w-full h-full border-none rounded-b-lg bg-white"
+            style={{
+              minHeight: "400px",
+            }}
+            title="preview"
+            sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+            allow="cross-origin-isolated"
+          />
+        </div>
+         {isMinPrograme && (
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-50 mt-10">
+            <div className="text-gray-400">可打开微信小程序开发者工具预览</div>
+          </div>
+        )}
+
+        {(!url && !isMinPrograme)&& (
           <div className="absolute inset-0 flex items-center justify-center bg-gray-50 mt-10">
             <div className="text-gray-400">暂未有服务运行</div>
           </div>

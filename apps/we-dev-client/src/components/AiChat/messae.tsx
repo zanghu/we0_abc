@@ -79,11 +79,12 @@ interface MessageState {
   currentArtifact?: BoltArtifactData;
   currentAction: BoltActionData;
   actionId: number;
+  hasInstallExecuted: boolean;
 }
 
 export class StreamingMessageParser {
   private messages = new Map<string, MessageState>();
-
+  public isUseStartCommand = false;
   constructor(private options: StreamingMessageParserOptions = {}) { }
 
   parse(messageId: string, input: string) {
@@ -96,6 +97,7 @@ export class StreamingMessageParser {
         insideArtifact: false,
         currentAction: { content: '' },
         actionId: 0,
+        hasInstallExecuted: false,
       };
       this.messages.set(messageId, state);
     }

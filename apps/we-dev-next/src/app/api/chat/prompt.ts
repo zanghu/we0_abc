@@ -6,6 +6,90 @@ export const WORK_DIR_NAME = "project";
 export const WORK_DIR = `/home/${WORK_DIR_NAME}`;
 export const MODIFICATIONS_TAG_NAME = "bolt_file_modifications";
 
+const iconName = [
+  "add-friends",
+  "add",
+  "add2",
+  "album",
+  "arrow",
+  "at",
+  "back",
+  "back2",
+  "bellring-off",
+  "bellring-on",
+  "camera",
+  "cellphone",
+  "clip",
+  "close",
+  "close2",
+  "comment",
+  "contacts",
+  "copy",
+  "delete-on",
+  "delete",
+  "discover",
+  "display",
+  "done",
+  "done2",
+  "download",
+  "email",
+  "error",
+  "eyes-off",
+  "eyes-on",
+  "folder",
+  "group-detail",
+  "help",
+  "home",
+  "imac",
+  "info",
+  "keyboard",
+  "like",
+  "link",
+  "location",
+  "lock",
+  "max-window",
+  "me",
+  "mike",
+  "mike2",
+  "mobile-contacts",
+  "more",
+  "more2",
+  "mosaic",
+  "music-off",
+  "music",
+  "note",
+  "pad",
+  "pause",
+  "pencil",
+  "photo-wall",
+  "play",
+  "play2",
+  "previous",
+  "previous2",
+  "qr-code",
+  "refresh",
+  "report-problem",
+  "search",
+  "sending",
+  "setting",
+  "share",
+  "shop",
+  "star",
+  "sticker",
+  "tag",
+  "text",
+  "time",
+  "transfer-text",
+  "transfer2",
+  "translate",
+  "tv",
+  "video-call",
+  "voice",
+  "volume-down",
+  "volume-off",
+  "volume-up",
+];
+
 export enum typeEnum {
   MiniProgram = "miniProgram",
   Other = "other",
@@ -20,11 +104,11 @@ const getExtraPrompt = (type: typeEnum,startNum:number = 15,extra:promptExtra = 
   promptArr.push(`IMPORTANT: 所有代码必须是完整代码，不要生成代码片段,而且不要Markdown`)
   if (type === typeEnum.MiniProgram) {
     // promptArr.push(`IMPORTANT: 并且返回小程序支持的文件路径和文件内容`);
-    promptArr.push(`IMPORTANT: You must use weui's icon library wherever pictures are used. Color represents color, and the required color style needs to be generated according to the context. At the same time, I modified weui's icon library to support passing in the svgSrc attribute. Here you need to pass is an SVG icon. e.g. component <mp-icon color="black" size="{{25}}" svgSrc="<?xml version="1.0" encoding="UTF-8"?><svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">        <title>3.Icons/Outlined/display</title>    <desc>Created with Sketch.</desc>    <g id="3.Icons/Outlined/display" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" fill-opacity="0.9">        <g id="common_icons_tv&amp;display" transform="translate(2.000000, 4.000000)" fill="#000000">            <path d="M1.2,1.2 L1.2,13.8 L18.8,13.8 L18.8,1.2 L1.2,1.2 Z M0,1 C0,0.44771525 0.44771525,0 1,0 L19,0 C19.5522847,0 20,0.44771525 20,1 L20,14 C20,14.5522847 19.5522847,15 19,15 L1,15 C0.44771525,15 0,14.5522847 0,14 L0,1 Z M6,16.8999993 C6,16.5686284 6.26617432,16.2999992 6.60130024,16.2999992 L13.3986998,16.2999992 C13.7307887,16.2999992 14,16.5783196 14,16.8999993 L14,17.4999993 L6,17.4999993 L6,16.8999993 Z" id="图标颜色"></path>        </g>    </g></svg>"></mp-icon>`)
-    promptArr.push(`IMPORTANT: this path needs to be registered in app.json and must be ./components/weicon`)
-    promptArr.push(`IMPORTANT: If the bottom tabbar is used, the tabbar needs to be implemented with a custom custom-tab-bar component.`)
-    promptArr.push(`IMPORTANT: wx tabbar’s app.json should avoid having the same path
-`)
+    promptArr.push(`IMPORTANT: 任何所有用到图片的地方都用weui的icon库实现，使用用法 例如<we-icon type="field" icon="add" color="black" size="{{24}}"></we-icon>, size必须是24px,其中icon只有${iconName.join(",")}这些情况，请根据合适的场景选择合适的icon`)
+    promptArr.push(`IMPORTANT: 如果需要使用图片，必须要在当前目录下的.json文件里面写入 /components/weicon/index`)
+    promptArr.push(`IMPORTANT: 如果小程序需要tabbar，生成自定义底部tabbar组件 custom-tab-bar，来代替原生app.json里面的tabbar,并且页面的json文件需要指定custom-tab-bar路径，同时tabbar里面用到的图片也要使用weicon的`)
+
+
 
   }
   if (type === typeEnum.Other) {
@@ -265,7 +349,7 @@ When modifying the code, the output must be in the following format! ! ! ! empha
       - Split functionality into smaller, reusable modules instead of placing everything in a single large file.
       - Keep files as small as possible by extracting related functionalities into separate modules.
       - Use imports to connect these modules together effectively.
-    15. IMPORTANT: When you need to execute 'npm install' or 'npm run dev', this command needs to be placed at the end of the generation 
+     15. IMPORTANT: 当要使用npm install 或者npm run dev的时候，这个命令需要放在生成代码的最后
     ${getExtraPrompt(type)}
     </artifact_instructions>
 </artifact_info>
@@ -280,6 +364,7 @@ ULTRA IMPORTANT: Do NOT be verbose and DO NOT explain anything unless the user i
 
 ULTRA IMPORTANT: Think first and reply with the artifact that contains all necessary steps to set up the project, files, shell commands to run. It is SUPER IMPORTANT to respond with this first.
 IMPORTANT: 一定要严格按照下面约束的格式生成
+IMPORTANT: 强调：你必须每次都要按照下面格式输出<boltArtifact></boltArtifact> 例如这样的格式
 Here are some examples of correct usage of artifacts:
 
 <examples>
@@ -327,15 +412,12 @@ Here are some examples of correct usage of artifacts:
             ...
           }
         </boltAction>
-
-        <boltAction type="shell">
-          npm install --save-dev vite
-        </boltAction>
-
         <boltAction type="file" filePath="index.html">
           ...
         </boltAction>
-
+        <boltAction type="shell">
+          npm install --save-dev vite
+        </boltAction>
         <boltAction type="start">
           npm run dev
         </boltAction>

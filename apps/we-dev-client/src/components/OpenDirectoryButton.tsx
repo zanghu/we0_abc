@@ -7,7 +7,7 @@ import { ActionButton } from "./Header/ActionButton";
 import { useTranslation } from "react-i18next";
 
 export const OpenDirectoryButton: React.FC = () => {
-  const { setEmptyFiles, setIsFirstSend, setIsUpdateSend } = useFileStore();
+  const { setEmptyFiles, setIsFirstSend, setIsUpdateSend, setProjectRoot } = useFileStore();
   const { t } = useTranslation();
 
   const handleOpenDirectory = async () => {
@@ -26,7 +26,7 @@ export const OpenDirectoryButton: React.FC = () => {
         const projectRoot = await (window as any)?.electron?.ipcRenderer.invoke(
           "node-container:get-project-root"
         );
-
+        setProjectRoot(selectedPath);
         console.log("Selected directory:", selectedPath);
         console.log("Project root:", projectRoot);
 

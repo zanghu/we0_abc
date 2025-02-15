@@ -4,7 +4,7 @@ import ReactMarkdown from "react-markdown";
 import { useFileStore } from "../../../../WeIde/stores/fileStore";
 import classNames from "classnames";
 import { executeCommand } from "@/components/WeIde/components/Terminal/utils/commands";
-import { isThinkContent, processThinkContent } from "../MessageItem";
+import { CodeBlock, isThinkContent, processThinkContent } from "../MessageItem";
 
 interface Task {
   status: "done" | "parsing";
@@ -195,16 +195,86 @@ export const ArtifactView: React.FC<ArtifactViewProps> = ({
       {preArtifactContent && (
         <div className="text-gray-900 dark:text-gray-100 leading-relaxed prose dark:prose-invert prose-sm max-w-none">
           <ReactMarkdown
-            components={{
-              blockquote({ children }) {
-                return (
-                  <blockquote className="border-l-4 border-gray-300 dark:border-gray-600 pl-4 my-2 text-sm text-gray-600 dark:text-gray-400">
-                    {children}
-                  </blockquote>
-                );
-              },
-            }}
-          >
+         components={{
+                  code({ node, className, children, ...props }) {
+                    const match = /language-(\w+)(?::(.+))?/.exec(className || "");
+                    const isInline = !match;
+
+                    if (isInline) {
+                      return (
+                        <code
+                          className="font-mono text-sm px-1.5 py-0.5 rounded bg-gray-50 dark:bg-[#282828] text-gray-800 dark:text-gray-300"
+                          {...props}
+                        >
+                          {children}
+                        </code>
+                      );
+                    }
+
+                    const language = match?.[1] || "";
+                    const filePath = match?.[2];
+                    // 确保 children 是字符串类型
+                    const content = Array.isArray(children) 
+                      ? children.join('') 
+                      : String(children).replace(/\n$/, "");
+
+                    return (
+                      <CodeBlock language={language} filePath={filePath}>
+                        {content}
+                      </CodeBlock>
+                    );
+                  },
+                  pre({ children }) {
+                    // 直接返回子元素，不需要额外的包装
+                    return children;
+                  },
+                  p({ children }) {
+                    return <p className="mb-2 last:mb-0">{children}</p>;
+                  },
+                  ul({ children }) {
+                    return (
+                      <ul className="list-disc pl-4 mb-2 space-y-1">
+                        {children}
+                      </ul>
+                    );
+                  },
+                  ol({ children }) {
+                    return (
+                      <ol className="list-decimal pl-4 mb-2 space-y-1">
+                        {(children)}
+                      </ol>
+                    );
+                  },
+                  li({ children }) {
+                    return <li className="text-gray-700 dark:text-gray-300">{(children)}</li>;
+                  },
+                  a({ children, href }) {
+                    return (
+                      <a
+                        href={href}
+                        className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 hover:underline"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {(children)}
+                      </a>
+                    );
+                  },
+                  blockquote({ children }) {
+                    return (
+                      <blockquote className="border-l-4 border-gray-200 dark:border-gray-600 pl-4 my-2 text-sm text-gray-600 dark:text-gray-400">
+                        {(children)}
+                      </blockquote>
+                    );
+                  },
+                  strong({ children }) {
+                    return <strong>{(children)}</strong>;
+                  },
+                  em({ children }) {
+                    return <em>{(children)}</em>;
+                  },
+                }}
+              >
             {preArtifactContent}
           </ReactMarkdown>
         </div>
@@ -253,7 +323,7 @@ export const ArtifactView: React.FC<ArtifactViewProps> = ({
         >
           <div className="py-1 space-y-0.5">
             {tasks.map((task, i) => (
-              <div className="flex items-center gap-2 px-2 py-1.5 hover:bg-gray-50 dark:hover:bg-[rgba(60,60,60)] group/item transition-colors">
+              <div key={i} className="flex items-center gap-2 px-2 py-1.5 hover:bg-gray-50 dark:hover:bg-[rgba(60,60,60)] group/item transition-colors">
                 <div className="flex-shrink-0">
                   {task.status === "done" && (
                     <span className="text-green-500 dark:text-green-400 text-sm">

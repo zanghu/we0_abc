@@ -11,12 +11,7 @@ export interface FilePreview {
   status?: "uploading" | "done" | "error";
 }
 
-const modelOptions: IModelOption[] = [
-  { value: 'claude-3-5-sonnet-20240620', label: 'Claude 3.5 Sonnet', icon: ClaudeAI, useImage: true, from: 'default' },
-  { value: 'gpt-4o-mini', label: 'gpt-4o-mini', icon: OpenAI, useImage: false, from: 'default' },
-  { value: 'DeepSeek-R1', label: 'DeepSeek R1', icon: DeepSeek, useImage: false, from: 'default' },
-  { value: 'deepseek-chat', label: 'DeepSeek V3', icon: DeepSeek, useImage: false, from: 'default' },
-] as const;
+
 interface ChatState {
   modelOptions: IModelOption[];
   setModelOptions: (v: IModelOption[]) => void;
