@@ -6,6 +6,7 @@ import {
   generateObject,
 } from "ai";
 import type { LanguageModel, Message } from "ai";
+import { modelConfig } from "../model/config";
 
 export const MAX_TOKENS = 5000;
 
@@ -45,13 +46,16 @@ export async function generateObjectFn(messages: Messages) {
 export function streamTextFn(
   messages: Messages,
   options?: StreamingOptions,
-  modelName?: string
+  modelKey?: string
 ) {
-  // todo 根据模型名字选厂商
+  // 根据模型名称找对应的key不然就使用默认的,方便拓展其他产商模型
+  const { apiKey = process.env.THIRD_API_KEY, apiUrl = process.env.THIRD_API_URL } = modelConfig.find(
+    (item) => item.modelKey === modelKey
+  );
   const model = getOpenAIModel(
-    process.env.THIRD_API_URL,
-    process.env.THIRD_API_KEY,
-    modelName || "claude-3-5-sonnet-20240620"
+    apiUrl,
+    apiKey,
+    modelKey || "claude-3-5-sonnet-20240620",
   ) as LanguageModel;
   return _streamText({
     model: model || defaultModel,

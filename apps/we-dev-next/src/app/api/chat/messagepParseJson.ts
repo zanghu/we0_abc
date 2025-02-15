@@ -1,3 +1,5 @@
+import { excludeFiles } from "./utils/fileProcessor";
+
 interface ParsedMessage {
     content: string;
     files?: Record<string, string>;
@@ -24,7 +26,10 @@ interface ParsedMessage {
         let boltMatch;
         while ((boltMatch = boltActionRegex.exec(artifactContent)) !== null) {
           const [_, filePath, fileContent] = boltMatch;
-          files[filePath] = fileContent.trim();
+          if (!excludeFiles.includes(filePath)) {
+            files[filePath] = fileContent.trim();
+          }
+
         }
         
         const newContent = content.replace(artifactRegex, `已经修改好了的目录${JSON.stringify(Object.keys(files))}`);

@@ -8,6 +8,7 @@ import { IModelOption } from "../..";
 import ClaudeAI from "../../../../../icon/Claude";
 import DeepSeek from "../../../../../icon/Deepseek";
 import useChatStore from "@/stores/chatSlice";
+import { aiProvier, aiProvierIcon, AiProvierIcon } from "./config";
 
 
 export const UploadButtons: React.FC<UploadButtonsProps> = ({
@@ -111,7 +112,7 @@ export const UploadButtons: React.FC<UploadButtonsProps> = ({
                   )}
                 >
                   <div className="flex items-center gap-2">
-                    <model.icon />
+                   {model.provider && aiProvierIcon[model.provider] && React.createElement(aiProvierIcon[model.provider])}
                     {model.label}
                   </div>
                 </button>

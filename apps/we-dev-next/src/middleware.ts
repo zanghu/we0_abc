@@ -21,6 +21,7 @@ const PUBLIC_PATHS = [
   "/api/auth/wechat",
   "/api/auth/github/callback",
   "/api/auth/register",
+  "/api/model",
   "/api/auth/oauth",
   "/api/d2c",
   "/api/upload",

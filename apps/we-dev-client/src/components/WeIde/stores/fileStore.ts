@@ -33,6 +33,11 @@ interface FileStore {
   createFolder: (path: string) => Promise<void>;
   getFiles: () => string[];
   setFiles: (files: Record<string, string>) => Promise<void>;
+  selectedPath: string;
+  projectRoot: string;
+  setSelectedPath: (path: string) => void;
+  setProjectRoot: (path: string) => void;
+
 }
 
 const initialFiles = {
@@ -192,4 +197,9 @@ export const useFileStore = create<FileStore>((set, get) => ({
   },
 
   getFiles: () => Object.keys(get().files),
+  selectedPath: '',
+  projectRoot: '',
+  setSelectedPath: (path: string) => set({ selectedPath: path }),
+  setProjectRoot: (path: string) => set({ projectRoot: path }),
+
 }));

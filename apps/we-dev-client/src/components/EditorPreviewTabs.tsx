@@ -64,7 +64,6 @@ async function findWeChatDevToolsPath() {
         const paths = result
           .split("\n")
           .filter((path) => path.includes("wechatwebdevtools.app"));
-        console.log(paths, "paths");
         if (paths.length > 0) {
           return paths[0];
         }
@@ -78,7 +77,7 @@ async function findWeChatDevToolsPath() {
   }
 }
 const EditorPreviewTabs: React.FC = () => {
-  const { getFiles } = useFileStore();
+  const { getFiles, projectRoot } = useFileStore();
   const [showIframe, setShowIframe] = useState<boolean>(false);
   const { t } = useTranslation();
 
@@ -92,11 +91,11 @@ const EditorPreviewTabs: React.FC = () => {
 
     try {
       const cliPath = await findWeChatDevToolsPath();   
-      if (getFiles().includes("app.json")) {
-        const projectPath = await ipcRenderer.invoke(
+      if (getFiles().includes("app.json") || getFiles().includes("miniprogram/app.json")) {
+        const defaultRoot = await ipcRenderer.invoke(
           "node-container:get-project-root"
         );
-        const command = `"${cliPath}" -o "${projectPath}" --auto-port`;
+        const command = `"${cliPath}" -o "${projectRoot || defaultRoot}" --auto-port`;
         await ipcRenderer.invoke("node-container:exec-command", command);
       }
     } catch (error) {

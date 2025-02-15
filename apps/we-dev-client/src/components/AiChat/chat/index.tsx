@@ -24,6 +24,25 @@ import useChatModeStore from "../../../stores/chatModeSlice";
 import { getSystemPrompt } from "@/utils/prompt";
 import Ollama from "@/icon/Ollama";
 const API_BASE = process.env.APP_BASE_URL;
+
+// 排除的文件
+export const excludeFiles = [
+  "components/weicon/base64.js",
+  "components/weicon/icon.css",
+  "components/weicon/index.js",
+  "components/weicon/index.json",
+  "components/weicon/index.wxml",
+  "components/weicon/icondata.js",
+  "components/weicon/index.css",
+  "/miniprogram/components/weicon/base64.js",
+  "/miniprogram/components/weicon/icon.css",
+  "/miniprogram/components/weicon/index.js",
+  "/miniprogram/components/weicon/index.json",
+  "/miniprogram/components/weicon/index.wxml",
+  "/miniprogram/components/weicon/icondata.js",
+  "/miniprogram/components/weicon/index.css",
+]
+
 enum ModelTypes {
   Claude35sonnet = "claude-3-5-sonnet-20240620",
   gpt4oMini = "gpt-4o-mini",
@@ -38,16 +57,9 @@ export interface IModelOption {
   icon?: React.FC<React.SVGProps<SVGSVGElement>>;
 }
 
-const EXAMPLE_PROMPTS = [
-  { text: "Build a todo app in React using Tailwind" },
-  { text: "Build a simple blog using Astro" },
-  { text: "Create a cookie consent form using Material UI" },
-  { text: "Make a space invaders game" },
-  { text: "How do I center a div?" },
-];
-
 function convertToBoltAction(obj: Record<string, string>): string {
   return Object.entries(obj)
+      .filter(([filePath]) => !excludeFiles.includes(filePath))
     .map(
       ([filePath, content]) =>
         `<boltAction type="file" filePath="${filePath}">\n${content}\n</boltAction>`
@@ -103,42 +115,22 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
   });
   const updateConvertToBoltAction = convertToBoltAction(filesUpdateObj);
 
-  // 使用 ollama 模型 获取模型列表
+  // 拓展ollama模型
   useEffect(() => {
-    if (ollamaConfig.url) {
-      try {
-        // 获取所有模型列表
-        fetch(`${ollamaConfig.url}/api/tags`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            origin: `${ollamaConfig.url.split(":")[0]}`,
-          },
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data?.models && data?.models?.length > 0) {
-              setModelOptions([
-                ...modelOptions,
-                ...data.models.map((item) => ({
-                  value: item.name,
-                  label: item.name,
-                  useImage: false,
-                  from: "ollama",
-                  icon: Ollama,
-                })),
-              ]);
-            }
-          }).catch((error) => {
-            console.error("Failed to fetch ollama server:", error);
-            toast.error('没有启用ollama服务')
-          });
-      } catch (error) {
-        console.error("Failed to fetch ollama server:", error);
-        toast.error('没有启用ollama服务')
-      }
-    }
-  }, [ollamaConfig]);
+    fetch(`${API_BASE}/api/model`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setModelOptions(data);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch model list:", error);
+      });
+  }, []);
 
   useEffect(() => {
     if (
@@ -222,7 +214,7 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
   useEffect(() => {
     const unsubscribe = eventEmitter.on("chat:select", (uuid: string) => {
       if (uuid !== chatUuid) {
-        refUuidMessages.current = []
+        refUuidMessages.current = [];
         setChatUuid(uuid || uuidv4());
         if (uuid) {
           // 加载历史记录
@@ -252,7 +244,7 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
   }, [chatUuid, files]);
   const token = useUserStore.getState().token;
   const { openModal } = useLimitModalStore();
-  
+
   const baseChatUrl =
     baseModal.from === "ollama" ? `${ollamaConfig.url}` : `${API_BASE}`;
   // 修改 useChat 配置
@@ -275,13 +267,16 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
       mode: mode,
     },
     id: chatUuid,
-    initialMessages: baseModal.from !== "ollama" ? [] : [
-      {
-        id: uuidv4(),
-        role: "system",
-        content: mode === ChatMode.Builder ? getSystemPrompt() : "",
-      }
-    ],
+    initialMessages:
+      baseModal.from !== "ollama"
+        ? []
+        : [
+            {
+              id: uuidv4(),
+              role: "system",
+              content: mode === ChatMode.Builder ? getSystemPrompt() : "",
+            },
+          ],
     onResponse: async (response) => {
       if (baseModal.from === "ollama") {
         const reader = response.body?.getReader();
@@ -292,30 +287,30 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
           if (done) break;
 
           const text = new TextDecoder().decode(value);
-          const lines = text.split('\n').filter(line => line.trim());
-          
+          const lines = text.split("\n").filter((line) => line.trim());
+
           for (const line of lines) {
             try {
               const data = JSON.parse(line);
               if (data.message?.content) {
-                setMessages(messages => {
+                setMessages((messages) => {
                   const lastMessage = messages[messages.length - 1];
                   if (lastMessage && lastMessage.role === "assistant") {
                     return [
                       ...messages.slice(0, -1),
                       {
                         ...lastMessage,
-                        content: lastMessage.content + data.message.content
-                      }
+                        content: lastMessage.content + data.message.content,
+                      },
                     ];
                   }
                   return [
                     ...messages,
                     {
                       id: uuidv4(),
-                      role: "assistant", 
-                      content: data.message.content
-                    }
+                      role: "assistant",
+                      content: data.message.content,
+                    },
                   ];
                 });
               }
@@ -331,7 +326,7 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
       setIsUpdateSend();
       clearImages();
       scrollToBottom();
- 
+
       try {
         await db.insert(chatUuid, {
           messages: [...messages, message],
@@ -343,10 +338,15 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
               ?.content?.slice(0, 50) || "New Chat",
         });
         setTimeout(() => {
-          const needParseMessages = [...messages, message].filter((m) => !refUuidMessages.current.includes(m.id));
-          refUuidMessages.current = [...refUuidMessages.current, ...needParseMessages.map((m) => m.id)];
+          const needParseMessages = [...messages, message].filter(
+            (m) => !refUuidMessages.current.includes(m.id)
+          );
+          refUuidMessages.current = [
+            ...refUuidMessages.current,
+            ...needParseMessages.map((m) => m.id),
+          ];
           parseMessages(needParseMessages as any);
-        }, 100)
+        }, 100);
       } catch (error) {
         console.error("Failed to save chat history:", error);
       }
@@ -363,56 +363,36 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
     },
   });
 
-
-  useEffect(() => {
-    const messageContainer = document.querySelector(".message-container");
-    if (messageContainer) {
-      const observer = new MutationObserver(() => {
-        scrollToBottom();
-      });
-
-      observer.observe(messageContainer, {
-        childList: true,
-        subtree: true,
-        characterData: true,
-      });
-
-      return () => observer.disconnect();
-    }
-  }, []);
-
   const parseTimeRef = useRef(0);
 
   useEffect(() => {
     const visibleFun = () => {
-      if(isLoading) return
-      if (document.hidden) {
-        console.log('页面不在最前面');
-      } else if(!isLoading && window.electron) {
-        console.log('页面处于最前面');
+      if (isLoading) return;
+      else if (!isLoading && window.electron) {
         setTimeout(() => {
-          updateFileSystemNow()
-        }, 600)
+          updateFileSystemNow();
+        }, 600);
       }
-    }
-    document.addEventListener('visibilitychange', visibleFun);
+    };
+    document.addEventListener("visibilitychange", visibleFun);
     return () => {
-      document.removeEventListener('visibilitychange', visibleFun);
-    }
-  }, [isLoading, files])
+      document.removeEventListener("visibilitychange", visibleFun);
+    };
+  }, [isLoading, files]);
 
   useEffect(() => {
     if (Date.now() - parseTimeRef.current > 500 && isLoading) {
       parseTimeRef.current = Date.now();
 
-      const needParseMessages = messages.filter((m) => !refUuidMessages.current.includes(m.id));
+      const needParseMessages = messages.filter(
+        (m) => !refUuidMessages.current.includes(m.id)
+      );
       parseMessages(needParseMessages as any);
     }
     if (errors.length > 0 && isLoading) {
       clearErrors();
     }
     if (!isLoading) {
-
       createMpIcon(files);
     }
   }, [messages, isLoading]);
@@ -425,33 +405,6 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
       });
     }
   };
-
-  // 添加自动滚动的 effect
-  useEffect(() => {
-    (window as any).isLoading = isLoading;
-    if (isLoading || messages.length > 0) {
-      scrollToBottom();
-    }
-  }, [isLoading, messages]);
-
-  // 添加 ResizeObserver 来处理内容高度变化
-  useEffect(() => {
-    const messageContainer = document.querySelector(".message-container");
-    if (!messageContainer) return;
-
-    const resizeObserver = new ResizeObserver(() => {
-      scrollToBottom();
-    });
-
-    const messageElements = messageContainer.children;
-    Array.from(messageElements).forEach((element) => {
-      resizeObserver.observe(element);
-    });
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, [messages]);
 
   // 添加上传状态跟踪
   const [isUploading, setIsUploading] = useState(false);
@@ -537,6 +490,10 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
           experimental_attachments: currentAttachments,
         }
       );
+      setTimeout(() => {
+        scrollToBottom();
+      }, 100);
+
       setInput("");
     } catch (error) {
       console.error("Upload failed:", error);
