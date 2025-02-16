@@ -32,15 +32,16 @@ export async function handleChatMode(
       messages.push({ id: uuidv4(), role: "assistant", content });
       messages.push({ id: uuidv4(), role: "user", content: CONTINUE_PROMPT });
 
-      const result = await streamTextFn(messages, options, model);
-      return stream.switchSource(result.toAIStream());
+     const result = streamTextFn(messages, options, model);
+      result.toDataStreamResponse({
+          sendReasoning: true,
+      }); 
+
     },
   };
-
-  const result = await streamTextFn(messages, options, model);
-  stream.switchSource(result.toAIStream());
-
-  return new Response(stream.readable, {
-    headers: { "Content-Type": "text/plain; charset=utf-8" },
+  const result = await streamTextFn(messages, {}, model);
+  return result.toDataStreamResponse({
+      sendReasoning: true,
   });
+
 } 

@@ -57,7 +57,15 @@
     "General": "General",
     "Language": "Language",
     "keyPlaceholder": "Please enter your API key",
-    "save": "Save"
+    "save": "Save",
+    "themeMode": "Theme Mode",
+    "themeModeLight": "Light Mode",
+    "themeModeDark": "Dark Mode"
+
+  },
+  "preview": {
+    "noserver": "No server running",
+    "wxminiPreview": "Open WeChat Mini Program Developer Tools for preview"
   },
   "editor": {
     "editor": "Editor",

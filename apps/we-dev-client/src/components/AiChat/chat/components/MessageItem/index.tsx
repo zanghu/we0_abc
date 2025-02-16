@@ -4,10 +4,8 @@ import { ArtifactView } from "../ArtifactView";
 import { ImageGrid } from "../ImageGrid";
 import { Message } from "ai";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { memo } from "react";
 import useThemeStore from "@/stores/themeSlice";
-import { SyntaxHighlighterProps } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { oneLight } from "react-syntax-highlighter/dist/esm/styles/prism";
 
@@ -28,6 +26,39 @@ interface MessageItemProps {
   isLoading: boolean;
   messages: Array<{ role: string; content: string }>;
 }
+// 添加处理流式parts的函数
+export const processStreamParts = (parts: Message['parts']): string => {
+  let result = '';
+  let thinkContent = '';
+
+  // 首先处理所有reasoning类型的内容
+  parts.forEach(part => {
+    if (part.type === 'reasoning') {
+      thinkContent += part.reasoning;
+    }
+  });
+
+  // 如果有reasoning内容，将其转换为markdown引用格式
+  if (thinkContent) {
+    result += thinkContent.split('\n')
+      .map(line => `> ${line}`)
+      .join('\n') + '\n\n';
+  }
+
+  // 添加其他类型的内容
+  parts.forEach(part => {
+    if (part.type === 'text') {
+      // 检查是否包含think标签，如果有则进行处理
+      if (isThinkContent(part.text)) {
+        result += processThinkContent(part.text);
+      } else {
+        result += part.text;
+      }
+    }
+  });
+
+  return result.trim();
+};
 
 const isArtifactContent = (content: string) => {
   return content.includes("<boltArtifact");
@@ -208,7 +239,7 @@ export const isThinkContent = (content: string) => {
   return content.includes("<think>") || content.includes("</think>");
 };
 
-// 处理 think 内容的函数，将内容转换为 markdown 引用格式
+// 修改 processThinkContent 函数
 export const processThinkContent = (content: string) => {
   let isInThinkBlock = false;
   let result = "";
@@ -218,28 +249,25 @@ export const processThinkContent = (content: string) => {
   for (let line of lines) {
     if (line.includes("<think>")) {
       isInThinkBlock = true;
-      line = line.replace("<think>", "");
-      if (line.trim()) {
-        result += `> ${line.trim()}\n`;
+      line = line.replace(/<think>/g, "").trim();
+      if (line) {
+          result += `> ${line}\n`;
       }
       continue;
     }
 
     if (line.includes("</think>")) {
       isInThinkBlock = false;
-      line = line.replace("</think>", "");
-      if (line.trim()) {
-        result += `> ${line.trim()}\n`;
+      line = line.replace(/<\/think>/g, "").trim();
+      if (line) {
+        result += `> ${line}\n`;
       }
+      result += "\n"; // 在think块结束后添加空行
       continue;
     }
 
     if (isInThinkBlock) {
-      if (line.trim()) {
-        result += `> ${line.trim()}\n`;
-      } else {
-        result += ">\n";
-      }
+      result += line.trim() ? `> ${line}\n` : ">\n";
     } else {
       result += `${line}\n`;
     }
@@ -248,18 +276,7 @@ export const processThinkContent = (content: string) => {
   return result.trim();
 };
 
-// 修改 processChildren 函数
-const processChildren = (children: React.ReactNode): React.ReactNode => {
-  if (typeof children === "string") {
-    return children;
-  }
-  return React.Children.map(children, (child) => {
-    if (typeof child === "string") {
-      return child;
-    }
-    return child;
-  });
-};
+
 
 export const MessageItem: React.FC<MessageItemProps> = ({
   message,
@@ -274,19 +291,6 @@ export const MessageItem: React.FC<MessageItemProps> = ({
   const avatarColor = isUser
     ? "bg-purple-500 dark:bg-purple-600"
     : "bg-gray-100 dark:bg-[rgba(45,45,45)]";
-
-  // 修改预处理消息内容的逻辑
-  const processedContent = useMemo(() => {
-    let content = message.content;
-
-    // 处理 think 内容
-    if (isThinkContent(content)) {
-      content = processThinkContent(content);
-    }
-
-    // 处理对象内容
-    return content;
-  }, [message.content]);
 
   return (
     <div className="group">
@@ -362,28 +366,28 @@ export const MessageItem: React.FC<MessageItemProps> = ({
                   p({ children }) {
                     return (
                       <p className="mb-2 last:mb-0">
-                        {processChildren(children)}
+                        {children}
                       </p>
                     );
                   },
                   ul({ children }) {
                     return (
                       <ul className="list-disc pl-4 mb-2 space-y-1">
-                        {processChildren(children)}
+                        {children}
                       </ul>
                     );
                   },
                   ol({ children }) {
                     return (
                       <ol className="list-decimal pl-4 mb-2 space-y-1">
-                        {processChildren(children)}
+                        {children}
                       </ol>
                     );
                   },
                   li({ children }) {
                     return (
                       <li className="text-gray-700 dark:text-gray-300">
-                        {processChildren(children)}
+                        {children}
                       </li>
                     );
                   },
@@ -395,26 +399,26 @@ export const MessageItem: React.FC<MessageItemProps> = ({
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        {processChildren(children)}
+                        {children}
                       </a>
                     );
                   },
                   blockquote({ children }) {
                     return (
-                      <blockquote className="border-l-4 border-gray-200 dark:border-gray-600 pl-4 my-2 text-sm text-gray-600 dark:text-gray-400">
-                        {processChildren(children)}
+                      <blockquote className="border-l-4 border-purple-200 dark:border-purple-800 pl-4 my-2 text-sm text-gray-600 dark:text-gray-400 bg-purple-50 dark:bg-purple-900/10 py-2 rounded">
+                        {children}
                       </blockquote>
                     );
                   },
                   strong({ children }) {
-                    return <strong>{processChildren(children)}</strong>;
+                    return <strong>{children}</strong>;
                   },
                   em({ children }) {
-                    return <em>{processChildren(children)}</em>;
+                    return <em>{children}</em>;
                   },
                 }}
               >
-                {processedContent}
+                {processStreamParts(message.parts)}
               </ReactMarkdown>
             </div>
           )}

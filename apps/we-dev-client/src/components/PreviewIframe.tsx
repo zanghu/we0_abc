@@ -1,6 +1,9 @@
 import { useEffect, useState, useRef } from "react";
 import { getContainerInstance } from "./WeIde/services";
 import { Smartphone, Tablet, Laptop, Monitor, ChevronDown } from "lucide-react";
+import { findWeChatDevToolsPath } from "./EditorPreviewTabs";
+import { useFileStore } from "./WeIde/stores/fileStore";
+import { useTranslation } from "react-i18next";
 
 interface PreviewIframeProps {
   setShowIframe: (show: boolean) => void;
@@ -29,9 +32,12 @@ const PreviewIframe: React.FC<PreviewIframeProps> = ({
   isMinPrograme,
 }) => {
   const [url, setUrl] = useState<string>("");
+  const ipcRenderer = (window as any)?.electron?.ipcRenderer;
   const [port, setPort] = useState<string>("");
+  const { projectRoot } = useFileStore();
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [scale, setScale] = useState<number>(1);
+  const { t } = useTranslation();
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const [selectedSize, setSelectedSize] = useState<WindowSize>(WINDOW_SIZES[0]);
@@ -57,7 +63,12 @@ const PreviewIframe: React.FC<PreviewIframeProps> = ({
     }
   };
 
-  const displayUrl = port ? `http://localhost:${port}` : (isMinPrograme ? '可打开微信小程序开发者工具预览' : '暂未有服务运行');
+    const displayUrl = port
+    ? `http://localhost:${port}`
+    : isMinPrograme
+      ? t('preview.wxminiPreview')
+      : t('preview.noserver');
+
   const handleWheel = (e: WheelEvent) => {
     if (e.ctrlKey) {
       e.preventDefault();
@@ -162,10 +173,23 @@ const PreviewIframe: React.FC<PreviewIframeProps> = ({
                   <button
                     key={size.name}
                     className="w-full px-4 py-3.5 text-left text-[#111827] dark:text-gray-300 text-sm whitespace-nowrap flex items-center gap-3 group hover:bg-[#F5EEFF] dark:hover:bg-gray-900 bg-white dark:bg-black"
-                    onClick={() => {
+                    onClick={async () => {
                       setSelectedSize(size);
                       setIsWindowSizeDropdownOpen(false);
-                    }}
+                      if (isMinPrograme && window.electron) {
+                        const defaultRoot = await ipcRenderer.invoke(
+                          "node-container:get-project-root"
+                        );
+                        const cliPath = await findWeChatDevToolsPath();
+                        const command = `"${cliPath}" preview --project "${projectRoot || defaultRoot}" --auto-port`;
+                        await ipcRenderer.invoke(
+                          "node-container:exec-command",
+                          command
+                        );
+                        // window.electron.ipcRenderer.send("open:external:url", `http://localhost:${port}`);
+                      }
+                    }
+}
                   >
                     <size.icon size={20} />
                     <div className="flex flex-col">
@@ -282,13 +306,13 @@ const PreviewIframe: React.FC<PreviewIframeProps> = ({
         </div>
          {isMinPrograme && (
           <div className="absolute inset-0 flex items-center justify-center bg-gray-50 mt-10">
-            <div className="text-gray-400">可打开微信小程序开发者工具预览</div>
+            <div className="text-gray-400">{t("preview.wxminiPreview")}</div>
           </div>
         )}
 
         {(!url && !isMinPrograme)&& (
           <div className="absolute inset-0 flex items-center justify-center bg-gray-50 mt-10">
-            <div className="text-gray-400">暂未有服务运行</div>
+            <div className="text-gray-400">{t("preview.noserver")}</div>
           </div>
         )}
       </div>

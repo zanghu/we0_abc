@@ -112,7 +112,7 @@ export function GeneralSettings() {
           {/* Theme Mode Toggle */}
           <div>
             <label className="block text-gray-500 dark:text-gray-300 mb-1.5 text-sm">
-              主题模式
+              {t("settings.themeMode")}
             </label>
             <div className="flex items-center space-x-2">
               <button
@@ -127,7 +127,7 @@ export function GeneralSettings() {
                         d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" 
                       />
                     </svg>
-                    <span>暗黑模式</span>
+                    <span>{t('settings.themeModeDark')}</span>
                   </>
                 ) : (
                   <>
@@ -136,7 +136,7 @@ export function GeneralSettings() {
                         d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707" 
                       />
                     </svg>
-                    <span>明亮模式</span>
+                    <span>{t("settings.themeModeLight")}</span>
                   </>
                 )}
               </button>
