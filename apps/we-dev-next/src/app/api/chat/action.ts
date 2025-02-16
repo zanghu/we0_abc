@@ -4,15 +4,32 @@ import {
   streamText as _streamText,
   convertToCoreMessages,
   generateObject,
+  wrapLanguageModel,
+  extractReasoningMiddleware
 } from "ai";
 import type { LanguageModel, Message } from "ai";
 import { modelConfig } from "../model/config";
+import { createDeepSeek } from "@ai-sdk/deepseek";
+
 
 export const MAX_TOKENS = 5000;
 
 export type StreamingOptions = Omit<Parameters<typeof _streamText>[0], "model">;
 
 export function getOpenAIModel(baseURL: string, apiKey: string, model: string) {
+   const provider = modelConfig.find(item => item.modelKey === model)?.provider;
+  if (provider === "deepseek") {
+    const deepseek = createDeepSeek({
+      apiKey,
+      baseURL,
+    });
+    const wrapModel =  wrapLanguageModel({
+      model: deepseek(model),
+      middleware: extractReasoningMiddleware({ tagName: 'think' }),
+    })
+    return wrapModel;
+  }
+
   const openai = createOpenAI({
     baseURL,
     apiKey,

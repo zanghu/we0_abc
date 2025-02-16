@@ -96,7 +96,6 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
     removeImage,
     clearImages,
     ollamaConfig,
-    modelOptions,
     setModelOptions,
   } = useChatStore();
   const filesInitObj = {} as Record<string, string>;

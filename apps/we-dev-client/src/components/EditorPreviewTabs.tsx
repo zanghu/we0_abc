@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 const ipcRenderer = (window as any)?.electron?.ipcRenderer;
 
 // 查找微信开发者工具路径
-async function findWeChatDevToolsPath() {
+export async function findWeChatDevToolsPath() {
   try {
     // 通过 IPC 调用主进程方法获取操作系统类型
     const platform = await ipcRenderer.invoke("node-container:platform");

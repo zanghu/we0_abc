@@ -57,8 +57,16 @@
     "General": "常规",
     "Language": "语言",
     "keyPlaceholder": "请输入你的API Key",
-    "save": "保存"
+    "save": "保存",
+    "themeMode": "主题模式",
+    "themeModeLight": "明亮模式",
+    "themeModeDark": "暗黑模型"
   },
+  "preview": {
+    "noserver": "暂未有服务运行",
+    "wxminiPreview": "可打开微信小程序开发者工具预览"
+  },
+
   "editor": {
     "editor": "编辑器",
     "preview": "预览",
