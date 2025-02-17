@@ -31,7 +31,6 @@ function App() {
   const { mode } = useChatModeStore();
   const { t } = useTranslation();
   const { isDarkMode, toggleTheme, setTheme } = useThemeStore();
-  console.log(t("Welcome to React"));
   const {
     // rememberMe,
     // isAuthenticated,
