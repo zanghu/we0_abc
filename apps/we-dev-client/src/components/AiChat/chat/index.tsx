@@ -23,7 +23,6 @@ import { useTranslation } from "react-i18next";
 import useChatModeStore from "../../../stores/chatModeSlice";
 import { getSystemPrompt } from "@/utils/prompt";
 import Ollama from "@/icon/Ollama";
-import Tips from "./components/Tips";
 
 export const excludeFiles = [
   "components/weicon/base64.js",
@@ -618,7 +617,6 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
     >
       <div className="flex-1 overflow-y-auto px-1 py-2 message-container [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         <div className="max-w-[640px] w-full mx-auto space-y-3">
-          <Tips setInput={setInput} handleFileSelect={handleFileSelect} />
           {messages.map((message, index) => (
             <MessageItem
               key={`${message.id}-${index}`}
