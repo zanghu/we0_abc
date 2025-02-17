@@ -31,7 +31,7 @@ Multi-platform support: Supports Windows and Mac operating systems for client do
 
 ## Get Started
 
-This project uses pnpm as the package management tool. Ensure your Node.js version is 18.20 or higher.
+This project uses pnpm as the package management tool. Ensure your Node.js version is 18.20 .
 
 - Install pnpm
 
@@ -56,17 +56,17 @@ pnpm install
 
 Rename .env.example to .env and fill in the corresponding content.
 
+Client apps/we-dev-client/.env
 ```shell
-# Client apps/we-dev-client/.env.example
-
 # SERVER_ADDRESS [MUST*] (eg: http://localhost:3000)
 APP_BASE_URL=
 
 # JWT_SECRET [Optional]
 JWT_SECRET=
+```
 
-# Servers apps/we-dev-next/.env.example
-
+Servers apps/we-dev-next/.env
+```shell
 # Third-Party Model URL [MUST*] (eg: https://api.openai.com/v1)
 THIRD_API_URL=
 
@@ -75,7 +75,6 @@ THIRD_API_KEY=
 
 # JWT_SECRET [Optional]
 JWT_SECRET=
-
 
 ```
 
@@ -147,6 +146,12 @@ How to Use the Client Version?
 
 send email to <a href="mailto:enzuo@wegc.cn">enzuo@wegc.cn</a>
 
+## WeChat Group Chat
+![alt text](./docs/img/code.png)
+
+If you cannot join the WeChat group, you can add
+
+![img.png](./docs/img/self.png)
 
 ## Star History
 

@@ -5,7 +5,7 @@
 
 ## 什么是 We0
 
-![alt text](./img/image-1.png)
+![alt tex t](./img/image-1.png)
 
 ## we0 有什么不同之处？
 
@@ -54,24 +54,23 @@ pnpm install
 
 .env.example 改名并且写入到 .env
 
+前端 apps/we-dev-client/.env
 ```shell
-# 前端 apps/we-dev-client/.env.example
-
 # 服务端地址 必填 例如 http://localhost:3000
 APP_BASE_URL=
 
 # jwt 密钥 选填
 JWT_SECRET=
+```
+后端服务 apps/we-dev-next/.env
 
-# 后端服务 apps/we-dev-next/.env.example
-
+```shell
 # 第三方模型api 必填 例如 https://api.openai.com/v1
 THIRD_API_URL=
 # 第三方模型api key 必填 例如 sk-xxxx
 THIRD_API_KEY=
 # jwt 密钥 选填
 JWT_SECRET=
-
 ```
 
 **快速启动的办法**
@@ -142,6 +141,12 @@ chmod +x scripts/wedev-build.sh
 
 发送邮件到 <a href="mailto:enzuo@wegc.cn">enzuo@wegc.cn</a>
 
+## 微信群交流群
+![alt text](./img/code.png)
+
+如果无法加入微信群，可以加
+
+![img.png](img/self.png)
 
 ## Star History
 
