@@ -142,11 +142,11 @@ chmod +x scripts/wedev-build.sh
 发送邮件到 <a href="mailto:enzuo@wegc.cn">enzuo@wegc.cn</a>
 
 ## 微信群交流群
-![alt text](./img/code.png)
+<img src="./img/code.png" alt="alt text" width="200"/>
 
 如果无法加入微信群，可以加
 
-![img.png](img/self.png)
+<img src="./img/self.png" alt="alt text" width="200"/>
 
 ## Star History
 
