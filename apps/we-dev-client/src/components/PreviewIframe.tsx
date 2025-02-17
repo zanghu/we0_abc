@@ -12,12 +12,12 @@ interface PreviewIframeProps {
 }
 interface WindowSize {
   name: string;
-  width: number;
-  height: number;
+  width: number | string;
+  height: number | string;
   icon: React.ComponentType<{ size?: string | number }>;
 }
 const WINDOW_SIZES: WindowSize[] = [
-  { name: "Desktop", width: 1920 / 1.5, height: 1080 / 1.5, icon: Monitor },
+  { name: "Desktop", width: '100%', height:'100%', icon: Monitor },
   { name: "Mobile", width: 375, height: 667, icon: Smartphone },
   {
     name: "Tablet",
@@ -289,8 +289,8 @@ const PreviewIframe: React.FC<PreviewIframeProps> = ({
         <div
           className="bg-white transition-all duration-200 origin-center"
           style={{
-            width: `${selectedSize.width}px`,
-            height: `${selectedSize.height}px`,
+            width: String(selectedSize?.width)?.indexOf('%') >= -1 ?  selectedSize.width  : `${selectedSize.width}px`,
+            height: String(selectedSize?.height)?.indexOf('%') >= -1 ? selectedSize.height : `${selectedSize.height}px`,
             transform: `scale(${scale})`,
           }}
         >
