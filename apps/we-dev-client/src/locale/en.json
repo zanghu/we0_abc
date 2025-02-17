@@ -1,6 +1,14 @@
 {
   "Welcome to React": "Welcome to React",
   "chat": {
+    "tips": {
+      "title": "Welcome to we0",
+      "description": "d2c sketch feature is only available in the online version",
+      "uploadSketch": "Upload Sketch",
+      "uploadImg": "Upload Image",
+      "game": "Generate a snake game",
+      "hello": "Generate a beautiful page"
+    },
     "errors": {
       "file_size_limit": "File {fileName} exceeds 5MB limit",
       "upload_failed": "Upload failed",
@@ -61,7 +69,6 @@
     "themeMode": "Theme Mode",
     "themeModeLight": "Light Mode",
     "themeModeDark": "Dark Mode"
-
   },
   "preview": {
     "noserver": "No server running",

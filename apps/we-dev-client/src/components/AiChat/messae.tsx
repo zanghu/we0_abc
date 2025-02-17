@@ -79,7 +79,8 @@ interface MessageState {
   currentArtifact?: BoltArtifactData;
   currentAction: BoltActionData;
   actionId: number;
-  hasInstallExecuted: boolean;
+  hasInstallExecuted?: boolean;
+  isUseStartCommand?: boolean;
 }
 
 export class StreamingMessageParser {
@@ -135,6 +136,7 @@ export class StreamingMessageParser {
               };
 
 
+
               // 根据 action 类型调用不同的回调
               if (state.currentAction.type === 'file') {
 
@@ -162,7 +164,6 @@ export class StreamingMessageParser {
                   filePath: state.currentAction.filePath,
                 },
               }
-              console.log(123456, actionCloseMatch, state.currentAction.type, "allActionData");
               // this.options.callbacks?.onActionStream?.({
               //   artifactId: state.currentArtifact!.id,
               //   messageId,
@@ -277,6 +278,10 @@ export class StreamingMessageParser {
   private extractAttribute(tag: string, attributeName: string): string | undefined {
     const match = tag.match(new RegExp(`${attributeName}="([^"]*)"`, 'i'));
     return match ? match[1] : undefined;
+  }
+
+  getMessageState(messageId: string): MessageState | undefined {
+    return this.messages.get(messageId);
   }
 }
 

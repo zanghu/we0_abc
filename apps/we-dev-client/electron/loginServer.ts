@@ -118,7 +118,6 @@ export function startLoginServer(mainWindow: BrowserWindow) {
       const url = new URL(req.url, `http://127.0.0.1:12900`);
       const token = url.searchParams.get("token");
 
-      console.log("收到登录回调，token:", token);
 
       // 通过 IPC 发送 token 到渲染进程
       if (token && mainWindow) {

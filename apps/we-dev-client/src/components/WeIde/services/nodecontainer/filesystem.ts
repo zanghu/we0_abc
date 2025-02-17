@@ -58,6 +58,7 @@ async function readDirRecursive(
 
 // 创建防抖版本的 updateFileSystemNow
 const debouncedUpdateFileSystem = debounce(async () => {
+  if((window as any).isLoading) return;
   const { updateContent, addFile, files: filesObj } = useFileStore.getState();
 
   try {

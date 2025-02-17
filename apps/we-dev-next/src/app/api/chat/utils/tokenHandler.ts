@@ -17,7 +17,7 @@ export async function handleTokenLimit(
 
   const objectResult = await generateObjectFn(fileMessage);
   const nowPathFiles = objectResult.object.files;
-
+  console.log('nowPathFiles', nowPathFiles);
   filesPath.forEach((path) => {
     if (nowPathFiles.includes(path)) {
       nowFiles[path] = files[path];

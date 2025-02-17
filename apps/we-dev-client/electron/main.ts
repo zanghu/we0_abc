@@ -326,7 +326,6 @@ function createWindow() {
           });
 
           proc.on("close", (code) => {
-            console.log("Main Process: Process closed with code:", code);
             activeProcesses.delete(processId);
             webContents.send(`process-exit-${processId}`, code || 0);
           });
@@ -406,7 +405,6 @@ function createWindow() {
         // @ts-ignore
         async function getAllFiles(dir: string): Promise<string[]> {
           const entries = await fs.readdir(dir, { withFileTypes: true });
-          // console.log('Reading directory:', dir, 'entries:', entries.map(e => e.name));
           const files = [];
 
           for (const entry of entries) {
@@ -419,7 +417,6 @@ function createWindow() {
               ".yaml",
             ];
             if (isHiddenNodeModules.includes(entry.name)) {
-              // console.log('Skipping node_modules:', fullPath);
               continue;
             }
 
@@ -435,7 +432,6 @@ function createWindow() {
 
         // 获取所有现有文件
         const existingFiles = await getAllFiles(projectRoot);
-        // console.log('Existing files:', existingFiles);
 
         // 同步所有文件
         for (const [filePath, contents] of Object.entries(files)) {
@@ -451,7 +447,6 @@ function createWindow() {
           const fullPath = path.join(projectRoot, filePath);
           const dirPath = path.dirname(fullPath);
 
-          // console.log('Writing file:', fullPath);
           await fs.mkdir(dirPath, { recursive: true });
           await fs.writeFile(fullPath, contents, "utf-8");
 
@@ -478,9 +473,6 @@ function createWindow() {
           }
         }
 
-        // 列出最终的文件
-        const finalFiles = await getAllFiles(projectRoot);
-        // console.log('Final files after sync:', finalFiles);
 
         return true;
       } catch (error) {

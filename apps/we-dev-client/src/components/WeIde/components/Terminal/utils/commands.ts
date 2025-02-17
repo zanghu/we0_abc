@@ -1,21 +1,23 @@
-import { Terminal } from "@xterm/xterm";
-import { updateFileSystemNow } from "../../../services";
-import { getWebContainerInstance } from "../../../services/webcontainer";
-import { IPty } from "node-pty";
-import { getNodeContainerInstance } from "../../../services/nodecontainer";
+import { Terminal } from '@xterm/xterm';
+import { updateFileSystemNow } from '../../../services';
+import { getWebContainerInstance } from '../../../services/webcontainer';
+import { IPty } from 'node-pty';
+import { getNodeContainerInstance } from '../../../services/nodecontainer';
 
 interface CommandResult {
   output: string[];
   exitCode: number;
 }
 
+
+
 let nowTerminal: Terminal | null = null;
 
 let nowProcessId: string | null = null;
 
-let startTip = "";
+let startTip = ''
 
-let initId = "";
+let initId = ''
 let ptyProcess: IPty | null = null;
 
 interface ElectronWindow {
@@ -34,21 +36,18 @@ declare const window: ElectronWindow;
 
 // 移除 ANSI 转义序列和时间戳的辅助函数
 function stripAnsi(str: string): string {
-  str = str.replace(/\u001b\[\d+m/g, "");
+  str = str.replace(/\u001b\[\d+m/g, '');
   // 检查是否以时间戳开头（HH:MM:SS 格式）
   if (/^\d{2}:\d{2}:\d{2}\s/.test(str)) {
     // 如果有时间戳，移除它
-    str = str.replace(/^\d{2}:\d{2}:\d{2}\s+/, "");
+    str = str.replace(/^\d{2}:\d{2}:\d{2}\s+/, '');
   }
   // 移除 ANSI 转义序列
   return str;
 }
 
-export async function waitCommand(
-  terminal: Terminal,
-  addError?: (error: any) => void
-) {
-  console.log("syncFileSystem", window.electron);
+export async function waitCommand(terminal: Terminal, addError?: (error: any) => void) {
+  console.log('syncFileSystem', window.electron);
   if (window.electron) {
     return await nodeWaitCommand(terminal, addError);
   } else {
@@ -56,16 +55,13 @@ export async function waitCommand(
   }
 }
 
-export async function webWaitCommand(
-  terminal: Terminal,
-  addError?: (error: any) => void
-) {
+export async function webWaitCommand(terminal: Terminal, addError?: (error: any) => void) {
   nowTerminal = terminal;
-  if (!window?.isElectron) {
-    terminal.write("please wait...\n");
+  if(!window?.isElectron){
+    terminal.write('please wait...\n')
   }
   const instance = await getWebContainerInstance();
-  const process = await instance?.spawn("/bin/jsh", [], {
+  const process = await instance?.spawn('/bin/jsh', [], {
     terminal: {
       cols: 80,
       rows: 15,
@@ -76,27 +72,28 @@ export async function webWaitCommand(
 
   output?.pipeTo(
     new WritableStream({
+
       write(data) {
-        if (data.includes("error") && addError) {
+        if (data.includes('error') && addError) {
           addError({
-            message: "compile error",
+            message: 'compile error',
             code: stripAnsi(data),
-            severity: "error",
-          });
+            severity: 'error',
+          })
         }
         if (!initId) {
-          initId = data?.split("/")[1].split("[39m")[0].trim();
-          startTip = data.replaceAll(initId, "weDev");
+          initId = data?.split('/')[1].split('[39m')[0].trim()
+          startTip = data.replaceAll(initId, 'weDev')
         }
         updateFileSystemNow();
-        terminal.write(data.replaceAll(initId, "weDev"));
+        terminal.write(data.replaceAll(initId, 'weDev'))
       },
-    })
+    }),
   );
 
   terminal.onData((data) => {
-    console.log(data, "data2");
-    input?.write(data);
+    console.log(data, 'data2');
+    input?.write(data)
   });
 }
 
@@ -106,18 +103,21 @@ export async function newTerminal() {
 
   const instance = await getNodeContainerInstance();
 
-  electron.ipcRenderer.invoke("terminal:write", nowProcessId, "clear" + "\n");
 
-  electron.ipcRenderer.invoke("terminal:write", nowProcessId, "exit" + "\n");
+  electron.ipcRenderer.invoke('terminal:write', nowProcessId, 'clear' + '\n');
 
+  electron.ipcRenderer.invoke('terminal:write', nowProcessId, 'exit' + '\n');
+
+
+  
   setTimeout(async () => {
-    electron.ipcRenderer.invoke("terminal:dispose", nowProcessId);
+    electron.ipcRenderer.invoke('terminal:dispose', nowProcessId);
     nowProcessId = null;
     const { invoke } = electron.ipcRenderer;
 
-    const { processId } = await invoke("terminal:create", {
+    const { processId } = await invoke('terminal:create', {
       cols: nowTerminal?.cols,
-      rows: nowTerminal?.rows,
+      rows: nowTerminal?.rows
     });
 
     const terminal = nowTerminal as Terminal;
@@ -126,12 +126,13 @@ export async function newTerminal() {
 
     electron.ipcRenderer.on(`terminal-output-${processId}`, (data: string) => {
       terminal.write(data);
-      if (data.includes("error") && AddErrorFunc) {
+      if (data.includes('error') && AddErrorFunc) {
+
         AddErrorFunc({
-          message: "compile error",
+          message: 'compile error',
           code: stripAnsi(data),
-          severity: "error",
-        });
+          severity: 'error',
+        })
       }
       const cleanData = stripAnsi(data);
       const urlMatch = cleanData.match(
@@ -141,28 +142,25 @@ export async function newTerminal() {
       if (urlMatch) {
         const port = urlMatch[1] || urlMatch[2] || urlMatch[3];
         const url = `http://localhost:${port}`;
-        instance?.emit("server-ready", parseInt(port), url);
+        instance?.emit('server-ready', parseInt(port), url);
       }
     });
 
-    electron.ipcRenderer.invoke(
-      "terminal:resize",
-      processId,
-      terminal.cols,
-      terminal.rows
-    );
+
+    electron.ipcRenderer.invoke('terminal:resize', processId, terminal.cols, terminal.rows);
     // 监听终端大小改变
+
+  
   }, 300);
 
   // 监听终端输入
+
 }
 
 let AddErrorFunc: any;
 
-export async function nodeWaitCommand(
-  terminal: Terminal,
-  addError?: (error: any) => void
-) {
+
+export async function nodeWaitCommand(terminal: Terminal, addError?: (error: any) => void) {
   // const { files, addError } = useFileStore();
   nowTerminal = terminal;
 
@@ -170,31 +168,33 @@ export async function nodeWaitCommand(
   // const electron: any = window || {};
   const electron = window.electron as any;
 
-  electron.ipcRenderer.invoke("terminal:write", nowProcessId, "clear");
+  electron.ipcRenderer.invoke('terminal:write', nowProcessId, 'clear');
 
-  electron.ipcRenderer.invoke("terminal:write", nowProcessId, "exit");
+  electron.ipcRenderer.invoke('terminal:write', nowProcessId, 'exit');
 
   const { invoke } = electron.ipcRenderer;
 
-  const { processId } = await invoke("terminal:create", {
+  const { processId } = await invoke('terminal:create', {
     cols: nowTerminal?.cols,
-    rows: nowTerminal?.rows,
+    rows: nowTerminal?.rows
   });
 
   const cols = terminal.cols;
   const rows = terminal.rows;
 
   nowProcessId = processId;
-
+  
   electron.ipcRenderer.on(`terminal-output-${nowProcessId}`, (data: string) => {
+
     updateFileSystemNow();
     terminal.write(data);
-    if (data.includes("error") && addError) {
+    if (data.includes('error') && addError) {
+
       addError({
-        message: "compile error",
+        message: 'compile error',
         code: stripAnsi(data),
-        severity: "error",
-      });
+        severity: 'error',
+      })
     }
     const cleanData = stripAnsi(data);
     const urlMatch = cleanData.match(
@@ -204,54 +204,57 @@ export async function nodeWaitCommand(
     if (urlMatch) {
       const port = urlMatch[1] || urlMatch[2] || urlMatch[3];
       const url = `http://localhost:${port}`;
-      instance?.emit("server-ready", parseInt(port), url);
+      instance?.emit('server-ready', parseInt(port), url);
     }
   });
 
   // 监听终端输入
   terminal.onData((data) => {
-    electron.ipcRenderer.invoke("terminal:write", nowProcessId, data);
+    electron.ipcRenderer.invoke('terminal:write', nowProcessId, data);
+
   });
 
-  electron.ipcRenderer.invoke("terminal:resize", processId, cols, rows);
+  electron.ipcRenderer.invoke('terminal:resize', processId, cols, rows);
   // 监听终端大小改变
   terminal.onResize(({ cols, rows }) => {
-    electron.ipcRenderer.invoke("terminal:resize", nowProcessId, cols, rows);
+    electron.ipcRenderer.invoke('terminal:resize', nowProcessId, cols, rows);
   });
+
 }
 
+
+
 export async function executeCommand(command: string): Promise<CommandResult> {
-  if ("electron" in window) {
+  if ('electron' in window) {
     // 对于 Electron 环境
     const { invoke } = window.electron!.ipcRenderer;
     const output: string[] = [];
 
     // 写入命令到终端
     if (nowProcessId) {
-      await invoke("terminal:write", nowProcessId, command + "\n");
+      await invoke('terminal:write', nowProcessId, command + '\n');
     }
 
     // 监听命令输出
-    window.electron!.ipcRenderer.on(
-      `terminal-output-${nowProcessId}`,
-      (data: string) => {
-        output.push(data);
-      }
-    );
+    window.electron!.ipcRenderer.on(`terminal-output-${nowProcessId}`, (data: string) => {
+      output.push(data);
+    });
 
     // 等待命令执行完成（这里可能需要根据实际情况调整）
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     return {
       output,
-      exitCode: 0,
+      exitCode: 0
     };
   } else {
     // 对于 WebContainer 环境
     const instance = await getWebContainerInstance();
-    const process = await instance.spawn("jsh", ["-c", command], {
+    const process = await instance.spawn('jsh', ['-c', command], {
       env: { npm_config_yes: true },
     });
+
+
     process.output.pipeTo(
       new WritableStream({
         write(data) {
@@ -259,8 +262,25 @@ export async function executeCommand(command: string): Promise<CommandResult> {
             nowTerminal.write(data);
           }
         },
-      })
+      }),
     );
+
     const exitCode = await process.exit;
+
+    // const { exit, output ,kill }: any = await instance?.spawn(command.split(' ')[0], command.split(' ').slice(1));
+
+    // const outputArray: string[] = [];
+    // for await (const chunk of output) {
+      
+    //   if (nowTerminal) {
+    //     nowTerminal.write(chunk);
+    //   }
+    //   console.log(await exit);
+    // }
+
+    // return {
+    //   output: outputArray,
+    //   exitCode: exit
+    // };
   }
 }

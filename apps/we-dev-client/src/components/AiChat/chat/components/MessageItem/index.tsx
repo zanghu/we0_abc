@@ -4,13 +4,50 @@ import { ArtifactView } from "../ArtifactView";
 import { ImageGrid } from "../ImageGrid";
 import { Message } from "ai";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { memo } from "react";
-import useThemeStore from "@/stores/themeSlice";
+import { SyntaxHighlighterProps } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { oneLight } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 import classNames from "classnames";
 import useUserStore from "../../../../../stores/userSlice";
+import useThemeStore from "@/stores/themeSlice";
+
+
+// 添加处理流式parts的函数
+export const processStreamParts = (parts: Message['parts']): string => {
+  let result = '';
+  let thinkContent = '';
+
+  // 首先处理所有reasoning类型的内容
+  parts?.forEach(part => {
+    if (part.type === 'reasoning') {
+      thinkContent += part.reasoning;
+    }
+  });
+
+  // 如果有reasoning内容，将其转换为markdown引用格式
+  if (thinkContent) {
+    result += thinkContent.split('\n')
+      .map(line => `> ${line}`)
+      .join('\n') + '\n\n';
+  }
+
+  // 添加其他类型的内容
+  parts?.forEach(part => {
+    if (part.type === 'text') {
+      // 检查是否包含think标签，如果有则进行处理
+      if (isThinkContent(part.text)) {
+        result += processThinkContent(part.text);
+      } else {
+        result += part.text;
+      }
+    }
+  });
+
+  return result.trim();
+};
 
 interface MessageItemProps {
   message: Message & {
@@ -26,39 +63,6 @@ interface MessageItemProps {
   isLoading: boolean;
   messages: Array<{ role: string; content: string }>;
 }
-// 添加处理流式parts的函数
-export const processStreamParts = (parts: Message['parts']): string => {
-  let result = '';
-  let thinkContent = '';
-
-  // 首先处理所有reasoning类型的内容
-  parts.forEach(part => {
-    if (part.type === 'reasoning') {
-      thinkContent += part.reasoning;
-    }
-  });
-
-  // 如果有reasoning内容，将其转换为markdown引用格式
-  if (thinkContent) {
-    result += thinkContent.split('\n')
-      .map(line => `> ${line}`)
-      .join('\n') + '\n\n';
-  }
-
-  // 添加其他类型的内容
-  parts.forEach(part => {
-    if (part.type === 'text') {
-      // 检查是否包含think标签，如果有则进行处理
-      if (isThinkContent(part.text)) {
-        result += processThinkContent(part.text);
-      } else {
-        result += part.text;
-      }
-    }
-  });
-
-  return result.trim();
-};
 
 const isArtifactContent = (content: string) => {
   return content.includes("<boltArtifact");
@@ -139,6 +143,7 @@ export const CodeBlock = memo(
   }) => {
     const [copied, setCopied] = useState(false);
     const { isDarkMode } = useThemeStore();
+
     const handleCopy = useCallback(async () => {
       try {
         await navigator.clipboard.writeText(children);
@@ -205,19 +210,26 @@ export const CodeBlock = memo(
               )}
             </button>
           </div>
-          <div className="overflow-hidden scrollbar-none">
-            <SyntaxHighlighter
-              language={language}
-              PreTag="div"
-              style={isDarkMode ? oneDark : oneLight}
-              useInlineStyles={true}
-              wrapLines={true}
-              wrapLongLines={true}
-              showLineNumbers={false}
-              className="text-sm [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] selection:bg-blue-100 dark:selection:bg-blue-800/30"
+          <div className="overflow-hidden bg-white dark:bg-[#1e1e1e]">
+            <div
+              className="overflow-x-auto scrollbar-none "
+              style={{
+                margin: "-0.5em 0px",
+              }}
             >
-              {children}
-            </SyntaxHighlighter>
+              <SyntaxHighlighter
+                language={language}
+                style={isDarkMode ? oneDark : oneLight}
+                PreTag="div"
+                useInlineStyles={true}
+                wrapLines={true}
+                wrapLongLines={true}
+                showLineNumbers={false}
+                className="text-sm [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] selection:bg-blue-100 dark:selection:bg-blue-800/30"
+              >
+                {children}
+              </SyntaxHighlighter>
+            </div>
           </div>
         </div>
       </div>
@@ -251,7 +263,7 @@ export const processThinkContent = (content: string) => {
       isInThinkBlock = true;
       line = line.replace(/<think>/g, "").trim();
       if (line) {
-          result += `> ${line}\n`;
+        result += `> ${line}\n`;
       }
       continue;
     }
@@ -277,7 +289,6 @@ export const processThinkContent = (content: string) => {
 };
 
 
-
 export const MessageItem: React.FC<MessageItemProps> = ({
   message,
   isLoading,
@@ -291,7 +302,6 @@ export const MessageItem: React.FC<MessageItemProps> = ({
   const avatarColor = isUser
     ? "bg-purple-500 dark:bg-purple-600"
     : "bg-gray-100 dark:bg-[rgba(45,45,45)]";
-
   return (
     <div className="group">
       <div className="flex items-start gap-2 px-2 py-1.5 rounded-lg hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors">

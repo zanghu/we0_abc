@@ -114,9 +114,9 @@ const handleImgBase64Toloacl = async (code: string) => {
       const file = new File([imgBlob as BlobPart], "sketch-image.png", {
         type: "image/png",
       });
-      const imgUrl = await uploadImage(file);
+      // const imgUrl = await uploadImage(file);
       // 本地url
-      // const imgUrl = URL.createObjectURL(imgBlob as Blob);
+      const imgUrl = URL.createObjectURL(imgBlob as Blob);
       console.log("imgUrl", imgUrl);
       console.log("要替换什么", match);
       // 替换所有匹配的 base64 数据
@@ -153,9 +153,9 @@ const handleCssBase64ToLocal = async (code: string) => {
       const file = new File([imgBlob as BlobPart], "sketch-image.png", {
         type: "image/png",
       });
-      const imgUrl = await uploadImage(file);
+      // const imgUrl = await uploadImage(file);
       // 本地url
-      // const imgUrl = URL.createObjectURL(imgBlob as Blob);
+      const imgUrl = URL.createObjectURL(imgBlob as Blob);
       // 替换整个url()部分
       newCode = newCode.replace(match, `url("${imgUrl}")`);
     }

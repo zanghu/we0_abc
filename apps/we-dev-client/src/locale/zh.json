@@ -1,6 +1,14 @@
 {
   "Welcome to React": "欢迎使用React",
   "chat": {
+    "tips": {
+      "title": "欢迎使用we0",
+      "description": "d2c sketch功能只有线上版可以用哟",
+      "uploadSketch": "上传Sketch",
+      "uploadImg": "上传图片",
+      "game": "生成一个贪吃蛇小游戏",
+      "hello": "生成一个好看的页面"
+    },
     "errors": {
       "file_size_limit": "文件 {fileName} 超过5MB限制",
       "upload_failed": "上传失败",
@@ -66,7 +74,6 @@
     "noserver": "暂未有服务运行",
     "wxminiPreview": "可打开微信小程序开发者工具预览"
   },
-
   "editor": {
     "editor": "编辑器",
     "preview": "预览",

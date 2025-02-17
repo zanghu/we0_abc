@@ -31,7 +31,6 @@ function App() {
   const { mode } = useChatModeStore();
   const { t } = useTranslation();
   const { isDarkMode, toggleTheme, setTheme } = useThemeStore();
-  console.log(t("Welcome to React"));
   const {
     // rememberMe,
     // isAuthenticated,
@@ -59,6 +58,14 @@ function App() {
     const settingsConfig = JSON.parse(localStorage.getItem('settingsConfig') || '{}');
     if (settingsConfig.language) {
       i18n.changeLanguage(settingsConfig.language);
+    } else {
+      // 获取浏览器的语言设置
+      const browserLang = navigator.language.toLowerCase();
+      // 如果是中文环境（包括简体中文和繁体中文），设置为中文，否则设置为英文
+      const defaultLang = browserLang.startsWith('zh') ? 'zh' : 'en';
+
+      i18n.changeLanguage(defaultLang);
+      // 保存到本地设置中
     }
     if (!isElectron) {
       const fetchUserInfo = async () => {
