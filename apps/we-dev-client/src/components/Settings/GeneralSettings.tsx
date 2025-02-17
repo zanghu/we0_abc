@@ -112,7 +112,7 @@ export function GeneralSettings() {
           {/* Theme Mode Toggle */}
           <div>
             <label className="block text-gray-500 dark:text-gray-300 mb-1.5 text-sm">
-              {t("settings.themeMode")}
+            {t("settings.themeMode")}
             </label>
             <div className="flex items-center space-x-2">
               <button

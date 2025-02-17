@@ -265,7 +265,10 @@ export function Sidebar({
                 {chat.title || "New Chat"}
               </span>
               <button
-                onClick={(e) => deleteChat(chat.uuid, e)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  deleteChat(chat.uuid, e);
+                }}
                 className="hidden group-hover:block text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white"
               >
                 <svg

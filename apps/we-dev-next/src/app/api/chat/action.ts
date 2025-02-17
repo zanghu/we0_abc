@@ -3,21 +3,20 @@ import { z } from "zod";
 import {
   streamText as _streamText,
   convertToCoreMessages,
+  extractReasoningMiddleware,
   generateObject,
   wrapLanguageModel,
-  extractReasoningMiddleware
 } from "ai";
 import type { LanguageModel, Message } from "ai";
 import { modelConfig } from "../model/config";
 import { createDeepSeek } from "@ai-sdk/deepseek";
-
 
 export const MAX_TOKENS = 5000;
 
 export type StreamingOptions = Omit<Parameters<typeof _streamText>[0], "model">;
 
 export function getOpenAIModel(baseURL: string, apiKey: string, model: string) {
-   const provider = modelConfig.find(item => item.modelKey === model)?.provider;
+  const provider = modelConfig.find(item => item.modelKey === model)?.provider;
   if (provider === "deepseek") {
     const deepseek = createDeepSeek({
       apiKey,
@@ -29,12 +28,10 @@ export function getOpenAIModel(baseURL: string, apiKey: string, model: string) {
     })
     return wrapModel;
   }
-
   const openai = createOpenAI({
     baseURL,
     apiKey,
   });
-
   return openai(model);
 }
 
@@ -63,7 +60,7 @@ export async function generateObjectFn(messages: Messages) {
 export function streamTextFn(
   messages: Messages,
   options?: StreamingOptions,
-  modelKey?: string
+  modelKey?: string,
 ) {
   // 根据模型名称找对应的key不然就使用默认的,方便拓展其他产商模型
   const { apiKey = process.env.THIRD_API_KEY, apiUrl = process.env.THIRD_API_URL } = modelConfig.find(
@@ -72,11 +69,10 @@ export function streamTextFn(
   const model = getOpenAIModel(
     apiUrl,
     apiKey,
-    modelKey || "claude-3-5-sonnet-20240620",
+    modelKey || "claude-3-5-sonnet-20240620"
   ) as LanguageModel;
   return _streamText({
     model: model || defaultModel,
-    maxTokens: MAX_TOKENS,
     messages: convertToCoreMessages(messages),
     ...options,
   });

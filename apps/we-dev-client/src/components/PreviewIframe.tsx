@@ -5,6 +5,7 @@ import { findWeChatDevToolsPath } from "./EditorPreviewTabs";
 import { useFileStore } from "./WeIde/stores/fileStore";
 import { useTranslation } from "react-i18next";
 
+
 interface PreviewIframeProps {
   setShowIframe: (show: boolean) => void;
   isMinPrograme: boolean;
@@ -16,6 +17,7 @@ interface WindowSize {
   icon: React.ComponentType<{ size?: string | number }>;
 }
 const WINDOW_SIZES: WindowSize[] = [
+  { name: "Desktop", width: 1920 / 1.5, height: 1080 / 1.5, icon: Monitor },
   { name: "Mobile", width: 375, height: 667, icon: Smartphone },
   {
     name: "Tablet",
@@ -24,26 +26,25 @@ const WINDOW_SIZES: WindowSize[] = [
     icon: Tablet,
   },
   { name: "Laptop", width: 1366, height: 768, icon: Laptop },
-  { name: "Desktop", width: 1920 / 1.5, height: 1080 / 1.5, icon: Monitor },
+
 ];
 
 const PreviewIframe: React.FC<PreviewIframeProps> = ({
   setShowIframe,
   isMinPrograme,
 }) => {
-  const [url, setUrl] = useState<string>("");
   const ipcRenderer = (window as any)?.electron?.ipcRenderer;
+  const [url, setUrl] = useState<string>("");
   const [port, setPort] = useState<string>("");
-  const { projectRoot } = useFileStore();
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [scale, setScale] = useState<number>(1);
-  const { t } = useTranslation();
   const [isDragging, setIsDragging] = useState(false);
+  const { projectRoot } = useFileStore();
   const containerRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
   const [selectedSize, setSelectedSize] = useState<WindowSize>(WINDOW_SIZES[0]);
   const [isWindowSizeDropdownOpen, setIsWindowSizeDropdownOpen] =
     useState(false);
-
   useEffect(() => {
     (async () => {
       const instance = await getContainerInstance();
@@ -63,7 +64,7 @@ const PreviewIframe: React.FC<PreviewIframeProps> = ({
     }
   };
 
-    const displayUrl = port
+  const displayUrl = port
     ? `http://localhost:${port}`
     : isMinPrograme
       ? t('preview.wxminiPreview')
@@ -135,6 +136,8 @@ const PreviewIframe: React.FC<PreviewIframeProps> = ({
   };
 
   const openExternal = () => {
+    // window.open('http://localhost:5174/');
+    // window.open(url, "_blank", "noopener,noreferrer");
     window.electron.ipcRenderer.send(
       "open:external:url",
       "http://localhost:5174/"
@@ -188,8 +191,7 @@ const PreviewIframe: React.FC<PreviewIframeProps> = ({
                         );
                         // window.electron.ipcRenderer.send("open:external:url", `http://localhost:${port}`);
                       }
-                    }
-}
+                    }}
                   >
                     <size.icon size={20} />
                     <div className="flex flex-col">
@@ -210,6 +212,7 @@ const PreviewIframe: React.FC<PreviewIframeProps> = ({
           <div className="px-3 py-1 rounded-md text-sm text-gray-50 border bg-[#2c2c2c] border-black w-full truncate">
             {displayUrl}
           </div>
+
           <button
             onClick={handleRefresh}
             className="ml-2 p-1 rounded hover:bg-[#2c2c2c] text-gray-400 hover:text-gray-200"
@@ -289,7 +292,6 @@ const PreviewIframe: React.FC<PreviewIframeProps> = ({
             width: `${selectedSize.width}px`,
             height: `${selectedSize.height}px`,
             transform: `scale(${scale})`,
-
           }}
         >
           <iframe
@@ -304,13 +306,12 @@ const PreviewIframe: React.FC<PreviewIframeProps> = ({
             allow="cross-origin-isolated"
           />
         </div>
-         {isMinPrograme && (
+        {isMinPrograme && (
           <div className="absolute inset-0 flex items-center justify-center bg-gray-50 mt-10">
             <div className="text-gray-400">{t("preview.wxminiPreview")}</div>
           </div>
         )}
-
-        {(!url && !isMinPrograme)&& (
+        {!url && !isMinPrograme && (
           <div className="absolute inset-0 flex items-center justify-center bg-gray-50 mt-10">
             <div className="text-gray-400">{t("preview.noserver")}</div>
           </div>

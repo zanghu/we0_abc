@@ -29,7 +29,6 @@ interface ParsedMessage {
           if (!excludeFiles.includes(filePath)) {
             files[filePath] = fileContent.trim();
           }
-
         }
         
         const newContent = content.replace(artifactRegex, `已经修改好了的目录${JSON.stringify(Object.keys(files))}`);

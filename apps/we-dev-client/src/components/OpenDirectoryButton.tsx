@@ -9,13 +9,11 @@ import { useTranslation } from "react-i18next";
 export const OpenDirectoryButton: React.FC = () => {
   const { setEmptyFiles, setIsFirstSend, setIsUpdateSend, setProjectRoot } = useFileStore();
   const { t } = useTranslation();
-
   const handleOpenDirectory = async () => {
     try {
       const result = await window.myAPI.dialog.showOpenDialog({
         properties: ["openDirectory"],
       });
-
       if (!result.canceled && result.filePaths.length > 0) {
         setEmptyFiles();
         const selectedPath = result.filePaths[0];
@@ -26,10 +24,10 @@ export const OpenDirectoryButton: React.FC = () => {
         const projectRoot = await (window as any)?.electron?.ipcRenderer.invoke(
           "node-container:get-project-root"
         );
-        setProjectRoot(selectedPath);
+
         console.log("Selected directory:", selectedPath);
         console.log("Project root:", projectRoot);
-
+        setProjectRoot(selectedPath);
         setTimeout(() => {
           setIsFirstSend();
           setIsUpdateSend();

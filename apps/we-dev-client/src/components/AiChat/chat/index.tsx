@@ -23,9 +23,8 @@ import { useTranslation } from "react-i18next";
 import useChatModeStore from "../../../stores/chatModeSlice";
 import { getSystemPrompt } from "@/utils/prompt";
 import Ollama from "@/icon/Ollama";
-const API_BASE = process.env.APP_BASE_URL;
+import Tips from "./components/Tips";
 
-// 排除的文件
 export const excludeFiles = [
   "components/weicon/base64.js",
   "components/weicon/icon.css",
@@ -43,6 +42,8 @@ export const excludeFiles = [
   "/miniprogram/components/weicon/index.css",
 ]
 
+
+const API_BASE = process.env.APP_BASE_URL;
 enum ModelTypes {
   Claude35sonnet = "claude-3-5-sonnet-20240620",
   gpt4oMini = "gpt-4o-mini",
@@ -53,13 +54,14 @@ export interface IModelOption {
   value: string;
   label: string;
   useImage: boolean;
-  from: string;
+  from?: string;
   icon?: React.FC<React.SVGProps<SVGSVGElement>>;
+  provider?: string;
 }
 
 function convertToBoltAction(obj: Record<string, string>): string {
   return Object.entries(obj)
-      .filter(([filePath]) => !excludeFiles.includes(filePath))
+    .filter(([filePath]) => (!excludeFiles.includes(filePath)) )
     .map(
       ([filePath, content]) =>
         `<boltAction type="file" filePath="${filePath}">\n${content}\n</boltAction>`
@@ -114,9 +116,9 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
   });
   const updateConvertToBoltAction = convertToBoltAction(filesUpdateObj);
 
-  // 拓展ollama模型
+  // 使用 ollama 模型 获取模型列表
   useEffect(() => {
-    fetch(`${API_BASE}/api/model`, {
+    fetch(`${API_BASE}/api/model`,{
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -125,11 +127,11 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
       .then((res) => res.json())
       .then((data) => {
         setModelOptions(data);
-      })
-      .catch((error) => {
+      }).catch((error) => {
         console.error("Failed to fetch model list:", error);
       });
   }, []);
+
 
   useEffect(() => {
     if (
@@ -213,7 +215,7 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
   useEffect(() => {
     const unsubscribe = eventEmitter.on("chat:select", (uuid: string) => {
       if (uuid !== chatUuid) {
-        refUuidMessages.current = [];
+        refUuidMessages.current = []
         setChatUuid(uuid || uuidv4());
         if (uuid) {
           // 加载历史记录
@@ -243,7 +245,7 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
   }, [chatUuid, files]);
   const token = useUserStore.getState().token;
   const { openModal } = useLimitModalStore();
-
+  
   const baseChatUrl =
     baseModal.from === "ollama" ? `${ollamaConfig.url}` : `${API_BASE}`;
   // 修改 useChat 配置
@@ -259,23 +261,12 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
     api: `${baseChatUrl}/api/chat`,
     headers: {
       ...(token && { Authorization: `Bearer ${token}` }),
-      referer: `${baseChatUrl}`,
     },
     body: {
       model: baseModal.value,
       mode: mode,
     },
     id: chatUuid,
-    initialMessages:
-      baseModal.from !== "ollama"
-        ? []
-        : [
-            {
-              id: uuidv4(),
-              role: "system",
-              content: mode === ChatMode.Builder ? getSystemPrompt() : "",
-            },
-          ],
     onResponse: async (response) => {
       if (baseModal.from === "ollama") {
         const reader = response.body?.getReader();
@@ -286,30 +277,30 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
           if (done) break;
 
           const text = new TextDecoder().decode(value);
-          const lines = text.split("\n").filter((line) => line.trim());
-
+          const lines = text.split('\n').filter(line => line.trim());
+          
           for (const line of lines) {
             try {
               const data = JSON.parse(line);
               if (data.message?.content) {
-                setMessages((messages) => {
+                setMessages(messages => {
                   const lastMessage = messages[messages.length - 1];
                   if (lastMessage && lastMessage.role === "assistant") {
                     return [
                       ...messages.slice(0, -1),
                       {
                         ...lastMessage,
-                        content: lastMessage.content + data.message.content,
-                      },
+                        content: lastMessage.content + data.message.content
+                      }
                     ];
                   }
                   return [
                     ...messages,
                     {
                       id: uuidv4(),
-                      role: "assistant",
-                      content: data.message.content,
-                    },
+                      role: "assistant", 
+                      content: data.message.content
+                    }
                   ];
                 });
               }
@@ -325,7 +316,6 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
       setIsUpdateSend();
       clearImages();
       scrollToBottom();
-
       try {
         await db.insert(chatUuid, {
           messages: [...messages, message],
@@ -337,15 +327,10 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
               ?.content?.slice(0, 50) || "New Chat",
         });
         setTimeout(() => {
-          const needParseMessages = [...messages, message].filter(
-            (m) => !refUuidMessages.current.includes(m.id)
-          );
-          refUuidMessages.current = [
-            ...refUuidMessages.current,
-            ...needParseMessages.map((m) => m.id),
-          ];
+          const needParseMessages = [...messages, message].filter((m) => !refUuidMessages.current.includes(m.id));
+          refUuidMessages.current = [...refUuidMessages.current, ...needParseMessages.map((m) => m.id)];
           parseMessages(needParseMessages as any);
-        }, 100);
+        }, 100)
       } catch (error) {
         console.error("Failed to save chat history:", error);
       }
@@ -362,36 +347,39 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
     },
   });
 
+
+
+
   const parseTimeRef = useRef(0);
 
   useEffect(() => {
     const visibleFun = () => {
-      if (isLoading) return;
-      else if (!isLoading && window.electron) {
+      if(isLoading) return
+       else if(!isLoading && window.electron) {
         setTimeout(() => {
-          updateFileSystemNow();
-        }, 600);
+          updateFileSystemNow()
+        }, 600)
       }
-    };
-    document.addEventListener("visibilitychange", visibleFun);
+    }
+    document.addEventListener('visibilitychange', visibleFun);
     return () => {
-      document.removeEventListener("visibilitychange", visibleFun);
-    };
-  }, [isLoading, files]);
+      document.removeEventListener('visibilitychange', visibleFun);
+    }
+  }, [isLoading, files])
 
   useEffect(() => {
     if (Date.now() - parseTimeRef.current > 500 && isLoading) {
       parseTimeRef.current = Date.now();
 
-      const needParseMessages = messages.filter(
-        (m) => !refUuidMessages.current.includes(m.id)
-      );
+      const needParseMessages = messages.filter((m) => !refUuidMessages.current.includes(m.id));
       parseMessages(needParseMessages as any);
+      scrollToBottom()
     }
     if (errors.length > 0 && isLoading) {
       clearErrors();
     }
     if (!isLoading) {
+
       createMpIcon(files);
     }
   }, [messages, isLoading]);
@@ -404,6 +392,7 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
       });
     }
   };
+
 
   // 添加上传状态跟踪
   const [isUploading, setIsUploading] = useState(false);
@@ -489,11 +478,10 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
           experimental_attachments: currentAttachments,
         }
       );
+      setInput("");
       setTimeout(() => {
         scrollToBottom();
       }, 100);
-
-      setInput("");
     } catch (error) {
       console.error("Upload failed:", error);
       toast.error("Failed to upload files");
@@ -630,6 +618,7 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
     >
       <div className="flex-1 overflow-y-auto px-1 py-2 message-container [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         <div className="max-w-[640px] w-full mx-auto space-y-3">
+          <Tips setInput={setInput} handleFileSelect={handleFileSelect} />
           {messages.map((message, index) => (
             <MessageItem
               key={`${message.id}-${index}`}

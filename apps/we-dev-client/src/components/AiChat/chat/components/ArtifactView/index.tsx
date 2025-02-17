@@ -194,8 +194,8 @@ export const ArtifactView: React.FC<ArtifactViewProps> = ({
       {/* 显示 boltArtifact 之前的文本内容 */}
       {preArtifactContent && (
         <div className="text-gray-900 dark:text-gray-100 leading-relaxed prose dark:prose-invert prose-sm max-w-none">
-          <ReactMarkdown
-         components={{
+  <ReactMarkdown
+                components={{
                   code({ node, className, children, ...props }) {
                     const match = /language-(\w+)(?::(.+))?/.exec(className || "");
                     const isInline = !match;
@@ -338,6 +338,9 @@ export const ArtifactView: React.FC<ArtifactViewProps> = ({
                 </div>
                 <div className="flex-1 flex items-center justify-between min-w-0">
                   <span
+                    onClick={() => {
+                      openFile(task.text);
+                    }}
                     className={`text-sm ${
                       task.status === "done"
                         ? "text-gray-700 dark:text-gray-300"
