@@ -44,6 +44,6 @@ export const modelConfig: ModelConfig[] = [
         provider: 'deepseek',
         description: 'deepseek-v3模型',   
         apiKey: process.env.THIRD_API_KEY,
-        apiUrl: process.env.THIRD_API_KEY,    
+        apiUrl: process.env.THIRD_API_URL,    
     }
 ]
