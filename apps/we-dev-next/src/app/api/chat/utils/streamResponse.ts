@@ -11,13 +11,13 @@ export async function streamResponse(
   model: string,
   userId: string | null
 ): Promise<Response> {
-  console.log(messages,'messages')
+  console.log(messages, "messages");
   const stream = new SwitchableStream();
   const options: StreamingOptions = {
     toolChoice: "none",
     onFinish: async (response) => {
       const { text: content, finishReason } = response;
-      
+
       if (finishReason !== "length") {
         const tokens = estimateTokens(content);
         if (userId) {
@@ -34,14 +34,14 @@ export async function streamResponse(
       messages.push({ id: uuidv4(), role: "user", content: CONTINUE_PROMPT });
 
       const result = await streamTextFn(messages, options, model);
-      return stream.switchSource(result.toAIStream());
+      result.toDataStreamResponse({
+        sendReasoning: true,
+      });
     },
   };
 
   const result = await streamTextFn(messages, options, model);
-  stream.switchSource(result.toAIStream());
-
-  return new Response(stream.readable, {
-    headers: { "Content-Type": "text/plain; charset=utf-8" },
+  return result.toDataStreamResponse({
+    sendReasoning: true,
   });
-} 
+}

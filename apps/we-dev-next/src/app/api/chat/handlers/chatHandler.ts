@@ -39,7 +39,7 @@ export async function handleChatMode(
 
     },
   };
-  const result = await streamTextFn(messages, {}, model);
+  const result = await streamTextFn(messages, options, model);
   return result.toDataStreamResponse({
       sendReasoning: true,
   });
