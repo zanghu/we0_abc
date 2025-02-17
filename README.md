@@ -147,11 +147,11 @@ How to Use the Client Version?
 send email to <a href="mailto:enzuo@wegc.cn">enzuo@wegc.cn</a>
 
 ## WeChat Group Chat
-![alt text](./docs/img/code.png)
+<img src="./docs/img/code.png" alt="alt text" width="200"/>
 
 If you cannot join the WeChat group, you can add
 
-![img.png](./docs/img/self.png)
+<img src="./docs/img/self.png" alt="alt text" width="200"/>
 
 ## Star History
 
