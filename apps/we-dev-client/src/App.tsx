@@ -13,8 +13,8 @@ import "./utils/i18";
 import classNames from "classnames";
 import { useTranslation } from "react-i18next";
 import { ChatMode } from "./types/chat";
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import i18n from "./utils/i18";
 interface Code {
@@ -44,7 +44,9 @@ function App() {
   useEffect(() => {
     const callback = (event: ClipboardEvent) => {
       try {
-        navigator.clipboard.writeText(window.getSelection().toString().trim()).then(() => {});
+        navigator.clipboard
+          .writeText(window.getSelection().toString().trim())
+          .then(() => {});
         event.preventDefault();
       } catch (e) {}
     };
@@ -53,27 +55,31 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') || 'dark';
+    const savedTheme = localStorage.getItem("theme") || "dark";
     if (savedTheme) {
-      setTheme(savedTheme === 'dark');
+      setTheme(savedTheme === "dark");
     } else {
       // 如果没有保存的主题设置，则使用系统主题
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const prefersDark = window.matchMedia(
+        "(prefers-color-scheme: dark)"
+      ).matches;
       setTheme(prefersDark);
-      localStorage.setItem('theme', prefersDark ? 'dark' : 'light');
+      localStorage.setItem("theme", prefersDark ? "dark" : "light");
     }
     (window as any)?.electron?.ipcRenderer.invoke(
       "node-container:set-now-path",
       ""
     );
-    const settingsConfig = JSON.parse(localStorage.getItem('settingsConfig') || '{}');
+    const settingsConfig = JSON.parse(
+      localStorage.getItem("settingsConfig") || "{}"
+    );
     if (settingsConfig.language) {
       i18n.changeLanguage(settingsConfig.language);
     } else {
       // 获取浏览器的语言设置
       const browserLang = navigator.language.toLowerCase();
       // 如果是中文环境（包括简体中文和繁体中文），设置为中文，否则设置为英文
-      const defaultLang = browserLang.startsWith('zh') ? 'zh' : 'en';
+      const defaultLang = browserLang.startsWith("zh") ? "zh" : "en";
 
       i18n.changeLanguage(defaultLang);
       // 保存到本地设置中
@@ -92,9 +98,9 @@ function App() {
 
   useEffect(() => {
     if (isDarkMode) {
-      document.documentElement.classList.add('dark');
+      document.documentElement.classList.add("dark");
     } else {
-      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.remove("dark");
     }
   }, [isDarkMode]);
 
@@ -102,9 +108,14 @@ function App() {
     <>
       <GlobalLimitModal onLogin={openLoginModal} />
       <Login isOpen={isLoginModalOpen} onClose={closeLoginModal} />
-      <div className={classNames("h-screen w-screen flex flex-col overflow-hidden", {
-        'dark': isDarkMode
-      })}>
+      <div
+        className={classNames(
+          "h-screen w-screen flex flex-col overflow-hidden",
+          {
+            dark: isDarkMode,
+          }
+        )}
+      >
         <Header />
         <div className="flex flex-row w-full h-full max-h-[calc(100%-48px)] bg-white dark:bg-[#111]">
           <AiChat code={code} />
