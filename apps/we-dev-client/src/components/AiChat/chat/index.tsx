@@ -316,8 +316,18 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
       clearImages();
       scrollToBottom();
       try {
+        let initMessage  = []
+        if (messages.length === 0) {
+          initMessage = [
+            {
+              id: uuidv4(),
+              role: "user",
+              content: input,
+            },
+          ];
+        }
         await db.insert(chatUuid, {
-          messages: [...messages, message],
+          messages: [...initMessage, ...messages, message],
           title:
             messages
               .find(

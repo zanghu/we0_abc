@@ -73,6 +73,11 @@ export const ChatInput: React.FC<ChatInputPropsType> = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.nativeEvent.isComposing || e.keyCode === 229) {
+      e.preventDefault(); // 阻止默认行为
+      return;
+    }
+    
     if (e.key === "Backspace" || e.key === "Delete") {
       const cursorPosition = e.currentTarget.selectionStart;
       const mention = mentions.find((m) => m.end === cursorPosition);
