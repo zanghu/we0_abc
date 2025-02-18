@@ -40,6 +40,17 @@ function App() {
     setUser,
   } = useUserStore();
 
+  // 复制优化
+  useEffect(() => {
+    const callback = (event: ClipboardEvent) => {
+      try {
+        navigator.clipboard.writeText(window.getSelection().toString().trim()).then(() => {});
+        event.preventDefault();
+      } catch (e) {}
+    };
+    document.addEventListener("copy", callback);
+    return () => document.removeEventListener("copy", callback);
+  }, []);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') || 'dark';
