@@ -26,7 +26,6 @@ const WINDOW_SIZES: WindowSize[] = [
     icon: Tablet,
   },
   { name: "Laptop", width: 1366, height: 768, icon: Laptop },
-
 ];
 
 const PreviewIframe: React.FC<PreviewIframeProps> = ({

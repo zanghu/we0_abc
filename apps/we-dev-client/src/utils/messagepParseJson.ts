@@ -10,7 +10,7 @@ const BOLT_ACTION_REGEX =
 
 export function parseMessage(content: string): ParsedMessage {
   // 如果内容不包含关键字，快速返回
-  if (!content.includes("<boltArtifact")) {
+  if (content && !content?.includes("<boltArtifact")) {
     return { content };
   }
 

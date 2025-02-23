@@ -292,7 +292,6 @@ export const ChatInput: React.FC<ChatInputPropsType> = ({
   };
 
   const handlePaste = async (e: ClipboardEvent) => {
-    console.log(baseModal,'useImage')
     if(!baseModal.useImage) return;
     if (isUploading) return;
 

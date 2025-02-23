@@ -52,7 +52,6 @@ export function Sidebar({
       const historyPromises = uuids.map(async (uuid) => {
         const records = await db.getByUuid(uuid);
         const latestRecord = records[0]; // 已按时间排序，取最新
-        console.log("latestRecord", latestRecord);
 
         // 添加安全检查
         if (!latestRecord?.data?.messages?.length) {
@@ -130,8 +129,6 @@ export function Sidebar({
     logout();
     onClose();
   };
-
-  const isElectron = getIsElectron();
   const renderUserSection = () => {
     if (!isAuthenticated) {
       return (

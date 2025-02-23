@@ -3,8 +3,10 @@ import React, { useMemo, useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import { useFileStore } from "../../../../WeIde/stores/fileStore";
 import classNames from "classnames";
+
 import { executeCommand } from "@/components/WeIde/components/Terminal/utils/commands";
 import { CodeBlock, isThinkContent, processThinkContent } from "../MessageItem";
+import { parseFileFromContext } from "../../../utils/index";
 
 interface Task {
   status: "done" | "parsing";
@@ -22,18 +24,6 @@ interface ArtifactViewProps {
   isComplete?: boolean;
   messages: Array<{ role: string; content: string }>;
 }
-
-// 添加解析上下文的函数
-const parseFileFromContext = (filePath: string, content: string) => {
-  const regex = new RegExp(
-    `<boltAction[^>]*filePath="${filePath}"[^>]*>([\\s\\S]*?)<\\/boltAction>`
-  );
-  const match = content.match(regex);
-  if (match) {
-    return match[1].trim();
-  }
-  return null;
-};
 
 export const ArtifactView: React.FC<ArtifactViewProps> = ({
   isUser,

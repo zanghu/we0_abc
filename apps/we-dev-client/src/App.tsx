@@ -28,7 +28,7 @@ interface Code {
 function App() {
   const [code, setCode] = useState<Code | null>(null);
   const isElectron = getIsElectron();
-  const { mode } = useChatModeStore();
+  const { mode, initOpen } = useChatModeStore();
   const { t } = useTranslation();
   const { isDarkMode, toggleTheme, setTheme } = useThemeStore();
   const {
@@ -117,9 +117,11 @@ function App() {
         )}
       >
         <Header />
-        <div className="flex flex-row w-full h-full max-h-[calc(100%-48px)] bg-white dark:bg-[#111]">
+        <div style={{
+
+        }} className="flex flex-row w-full h-full max-h-[calc(100%-48px)] bg-white dark:bg-[#111]">
           <AiChat code={code} />
-          {mode === ChatMode.Builder && <EditorPreviewTabs />}
+          {mode === ChatMode.Builder && !initOpen && <EditorPreviewTabs />}
         </div>
       </div>
       <ToastContainer

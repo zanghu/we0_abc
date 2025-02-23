@@ -24,7 +24,6 @@ export function processFiles(messages: Messages) {
   messages.forEach((message) => {
     allContent += message.content;
     const { content, files: messageFiles } = parseMessage(message.content);
-    message.content = content;
     if (typeof messageFiles === "object") {
       excludeFiles.forEach(file => delete messageFiles[file]);
     }

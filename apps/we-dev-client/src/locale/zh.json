@@ -12,10 +12,6 @@
     "errors": {
       "file_size_limit": "文件 {fileName} 超过5MB限制",
       "upload_failed": "上传失败",
-      "paste_failed": "粘贴图片失败",
-      "add_image_failed": "添加图片失败"
-    },
-    "success": {
       "images_uploaded": "图片上传成功",
       "images_uploaded_multiple": "{count}张图片上传成功",
       "image_pasted": "图片粘贴成功",
@@ -91,6 +87,10 @@
     "clear_all": "清除所有",
     "explorer": "资源管理器"
   },
+  "common": {
+      "cancel": "取消",
+      "confirm": "确认"
+  },
   "sidebar": {
     "start_new_chat": "开始新聊天",
     "search": "搜索",
@@ -120,6 +120,7 @@
     "email": "邮箱",
     "password": "密码",
     "sign_in": "登录",
+    "signing_in": "登录中...",
     "remember_me": "记住我",
     "forgot_password": "忘记密码",
     "By_signing_in_you_agree_to_our": "登录即表示您同意我们的",
