@@ -4,9 +4,7 @@ import { ArtifactView } from "../ArtifactView";
 import { ImageGrid } from "../ImageGrid";
 import { Message } from "ai";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { memo } from "react";
-import { SyntaxHighlighterProps } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { oneLight } from "react-syntax-highlighter/dist/esm/styles/prism";
 
