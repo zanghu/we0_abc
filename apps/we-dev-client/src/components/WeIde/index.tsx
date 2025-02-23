@@ -11,6 +11,7 @@ import { useEditorStore } from "./stores/editorStore";
 export default function WeIde() {
   const [activeTab, setActiveTab] = useState("");
   const [showTerminal, setShowTerminal] = useState(true);
+  const [terminalCount, setTerminalCount] = useState(1);
   const [openTabs, setOpenTabs] = useState<string[]>([]);
   const { setDirty } = useEditorStore();
   const [activeView, setActiveView] = useState<"files" | "search">("files");
@@ -29,7 +30,21 @@ export default function WeIde() {
       window.removeEventListener("openFile", handleEmit as EventListener);
     };
   }, [openTabs]);
-  
+
+  // 面板打开时，至少一个终端
+  useEffect(() => {
+    if (showTerminal && terminalCount < 1) {
+      setTerminalCount(1)
+    }
+  }, [showTerminal])
+
+  // 关闭最后一个终端时，关闭面板
+  useEffect(() => {
+    if (terminalCount === 0) {
+      setShowTerminal(false)
+    }
+  }, [terminalCount])
+
   const handleFileSelectAiFile = (path: string, line?: number) => {
     setActiveTab(path);
     setCurrentLine(line);
@@ -72,6 +87,7 @@ export default function WeIde() {
       }}
       className="h-full w-full bg-white dark:bg-[#1e1e1e] text-[#333] dark:text-gray-300 flex overflow-hidden border border-[#e4e4e4] dark:border-[#333]"
     >
+      {/* 活动栏（icon栏） */}
       <ActivityBar
         activeView={activeView}
         onViewChange={setActiveView}
@@ -79,6 +95,8 @@ export default function WeIde() {
       />
 
       <PanelGroup direction="horizontal">
+
+        {/* 文件列表 */}
         <Panel
           defaultSize={25}
           minSize={16}
@@ -92,10 +110,14 @@ export default function WeIde() {
           )}
         </Panel>
 
+        {/* 文件列表拖动 */}
         <PanelResizeHandle className="w-1 hover:bg-[#e8e8e8] dark:hover:bg-[#404040] transition-colors cursor-col-resize" />
 
-        <Panel className="min-w-0">
+        {/* 最右边的coding和终端 */}
+        <Panel className="min-w-0 ml-[-1px]">
           <PanelGroup direction="vertical">
+
+            {/* coding区域 */}
             <Panel className="flex flex-col min-h-0">
               <EditorTabs
                 openTabs={openTabs}
@@ -111,20 +133,25 @@ export default function WeIde() {
               </div>
             </Panel>
 
-            {showTerminal && (
-              <>
-                <PanelResizeHandle className="h-1 hover:bg-[#e8e8e8] dark:hover:bg-[#404040] transition-colors cursor-row-resize" />
-                <Panel
-                  defaultSize={30}
-                  minSize={10}
-                  maxSize={80}
-                  style={{ display: "flex", flexDirection: "column" }}
-                  className="bg-[#f3f3f3] dark:bg-[#1e1e1e] border-t border-[#e4e4e4] dark:border-[#333]"
-                >
-                  <Terminal onClose={() => setShowTerminal(false)} />
-                </Panel>
-              </>
-            )}
+            {/* 终端区域 */}
+            {terminalCount !== 0 && <>
+              {/* 上下拖动区域 */}
+              <PanelResizeHandle
+                style={{ display: showTerminal ? "flex" : "none" }}
+                className="h-1 hover:bg-[#e8e8e8] dark:hover:bg-[#404040] transition-colors cursor-row-resize" />
+
+              {/* 创建 承载终端 的容器 */}
+              <Panel
+                defaultSize={30}
+                minSize={10}
+                maxSize={80}
+                style={{ display: showTerminal ? "flex" : "none", flexDirection: "column" }}
+                className="bg-[#f3f3f3] dark:bg-[#1e1e1e] border-t border-[#e4e4e4] dark:border-[#333]"
+              >
+                {/* 终端icon + 终端本体 */}
+                <Terminal terminalCount={terminalCount} setTerminalCount={setTerminalCount} />
+              </Panel>
+            </>}
           </PanelGroup>
         </Panel>
       </PanelGroup>

@@ -6,11 +6,15 @@ enum ChatMode {
 }
 interface ChatModeState {
   mode: ChatMode;
+  initOpen: boolean;
+  setInitOpen: (initOpen: boolean) => void;
   setMode: (mode: ChatMode) => void;
 }
 
 const useChatModeStore = create<ChatModeState>((set) => ({
   mode: ChatMode.Builder,
+  initOpen: false,
+  setInitOpen: (initOpen) => set({ initOpen }),
   setMode: (mode) => set({ mode }),
 }));
 

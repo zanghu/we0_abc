@@ -130,6 +130,23 @@ const getInitial = (name: string | null | undefined): string => {
   return name.charAt(0).toUpperCase();
 };
 
+// 添加自定义样式处理
+const customHighlight = (code: string, language: string) => {
+  try {
+    const highlighted = hljs.highlight(code.trim(), {
+      language: language || 'plaintext',
+      ignoreIllegals: true
+    }).value;
+    // 更激进地处理缩进：
+    return highlighted
+      .replace(/^[ ]{4}/gm, ' ')     // 将4空格缩进改为1空格
+      .replace(/^[ ]{2}/gm, ' ')     // 将2空格缩进改为1空格
+      .replace(/^[ ]{3}/gm, ' ');    // 将3空格缩进改为1空格
+  } catch (e) {
+    return code;
+  }
+};
+
 // 使用 memo 包裹 CodeBlock 组件以避免不必要的重渲染
 export const CodeBlock = memo(
   ({
@@ -155,9 +172,9 @@ export const CodeBlock = memo(
     }, [children]);
 
     return (
-      <div className="my-4">
+      <div className="my-1">
         <div className="rounded-lg overflow-hidden group border dark:border-[#333] shadow-sm">
-          <div className="flex items-center justify-between px-4 py-2 border-b dark:border-[#333] bg-gray-50 dark:bg-[#2d2d2d]">
+          <div className="flex items-center justify-between px-2 py-0.5 border-b dark:border-[#333] bg-gray-50 dark:bg-[#2d2d2d]">
             <div className="flex items-center gap-2.5">
               {filePath ? (
                 <div className="flex items-center gap-2">
@@ -168,12 +185,12 @@ export const CodeBlock = memo(
                   >
                     <path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V6h-2.75A1.75 1.75 0 0 1 9 4.25V1.5Zm6.75.062V4.25c0 .138.112.25.25.25h2.688l-.011-.013-2.914-2.914-.013-.011Z" />
                   </svg>
-                  <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                  <span className="text-xs text-gray-600 dark:text-gray-400 font-medium">
                     {filePath}
                   </span>
                 </div>
               ) : language ? (
-                <div className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                <div className="text-xs text-gray-600 dark:text-gray-400 font-medium">
                   {language}
                 </div>
               ) : null}
@@ -296,6 +313,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
 }) => {
   const { user } = useUserStore();
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
   const isUser = message.role === "user";
 
   const initial = isUser ? getInitial(user?.name || user?.username) : "AI";
@@ -415,8 +433,45 @@ export const MessageItem: React.FC<MessageItemProps> = ({
                   },
                   blockquote({ children }) {
                     return (
-                      <blockquote className="border-l-4 border-purple-200 dark:border-purple-800 pl-4 my-2 text-sm text-gray-600 dark:text-gray-400 bg-purple-50 dark:bg-purple-900/10 py-2 rounded">
-                        {children}
+                      <blockquote className="relative border-l-4 border-purple-200 dark:border-purple-800 pl-4 my-2 text-sm text-gray-600 dark:text-gray-400 bg-purple-50 dark:bg-purple-900/10 py-2 rounded group">
+                        <div
+                          className={`overflow-hidden pr-2 transition-all duration-200 ${
+                            isCollapsed ? "h-4" : "max-h-none"
+                          }`}
+                        >
+                          {children}
+                        </div>
+                        {/* 渐变遮罩 */}
+                        {isCollapsed && (
+                          <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-purple-50 dark:from-[rgba(88,28,135,0.1)] to-transparent" />
+                        )}
+                        {/* 折叠/展开按钮 */}
+                        <button
+                          onClick={() => setIsCollapsed(!isCollapsed)}
+                          className="absolute bottom-1 right-2 text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 p-1 rounded-full hover:bg-purple-100 dark:hover:bg-purple-900/20"
+                        >
+                          <svg
+                            className="w-4 h-4"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          >
+                            {isCollapsed ? (
+                              <path
+                                d="M12 5v14M5 12h14"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            ) : (
+                              <path
+                                d="M5 12h14"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            )}
+                          </svg>
+                        </button>
                       </blockquote>
                     );
                   },
@@ -428,7 +483,9 @@ export const MessageItem: React.FC<MessageItemProps> = ({
                   },
                 }}
               >
-                {processStreamParts(message.parts)}
+                {(() => {
+                  return processStreamParts(message.parts)
+                })()}
               </ReactMarkdown>
             </div>
           )}

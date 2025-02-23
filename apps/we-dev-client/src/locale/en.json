@@ -1,5 +1,9 @@
 {
   "Welcome to React": "Welcome to React",
+  "common": {
+    "cancel": "Cancel",
+    "confirm": "Confirm"
+  },
   "chat": {
     "tips": {
       "title": "Welcome to we0",

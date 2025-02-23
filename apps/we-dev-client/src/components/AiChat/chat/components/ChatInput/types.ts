@@ -1,9 +1,10 @@
 import type { FilePreview } from "@/stores/chatSlice";
 import type { ErrorMessage } from "../../../../WeIde/stores/fileStore";
-import { IModelOption, ModelTypes } from "../..";
+import { IModelOption } from "../..";
 
 export interface ChatInputProps {
   input: string;
+  append: any;
   isLoading: boolean;
   isUploading: boolean;
   uploadedImages: FilePreview[];

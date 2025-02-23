@@ -1,4 +1,4 @@
-import { Files, Settings, Search, Terminal } from "lucide-react";
+import { Files, Settings, Search, Terminal, Github } from "lucide-react";
 import { cn } from "../utils/cn";
 import { Tooltip } from "../ui/tooltip";
 
@@ -13,6 +13,11 @@ export function ActivityBar({
   onViewChange,
   onToggleTerminal,
 }: ActivityBarProps) {
+  // GitHub 仓库链接
+  const handleGithubClick = () => {
+    window.open('https://github.com/we0-dev/we0', '_blank');
+  };
+
   return (
     <div className="w-12 bg-[#f3f3f3] dark:bg-[#252526] flex flex-col items-center py-2 border-r border-[#e4e4e4] dark:border-[#1E1E1E]">
       <Tooltip content="文件浏览器" side="right">
@@ -60,6 +65,16 @@ export function ActivityBar({
       </Tooltip>
 
       <div className="flex-grow" />
+
+      <Tooltip content="GitHub" side="right">
+        <button
+          aria-label="GitHub"
+          onClick={handleGithubClick}
+          className="p-1.5 rounded-md mb-2 transition-all duration-200 text-[#616161] dark:text-[#858585] hover:text-[#424242] hover:bg-[#e8e8e8] dark:hover:text-white dark:hover:bg-[#37373D]"
+        >
+          <Github className="w-5 h-5" />
+        </button>
+      </Tooltip>
 
       <Tooltip content="设置" side="right">
         <button

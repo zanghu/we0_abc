@@ -1,4 +1,3 @@
-
 import { Card, ConfigProvider, Divider, Flex, theme } from "antd";
 import { useEffect, useState } from "react";
 import { BaseChat } from "./chat";
@@ -18,10 +17,7 @@ interface AiChatProps {
 }
 
 const Independent: React.FC<AiChatProps> = ({ code }) => {
-  const { mode } = useChatModeStore();
-  useEffect(() => {
-    console.log('code改变了', code);
-  }, [code]);
+  const { mode, initOpen } = useChatModeStore();
 
   return (
     <ConfigProvider
@@ -31,8 +27,16 @@ const Independent: React.FC<AiChatProps> = ({ code }) => {
     >
       <div
         className="bg-[rgba(255,255,255)] dark:bg-[rgba(30,30,30)]"
+        
         style={{
-          width: `${mode === ChatMode.Builder ? "300px" : "100%"}`,
+          ...(initOpen
+            ? {
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }
+            : {}),
+          width: `${mode === ChatMode.Builder && !initOpen ? "300px" : "100%"}`,
           minWidth: "400px",
           borderRadius: "8px",
           padding: "16px",
@@ -41,10 +45,9 @@ const Independent: React.FC<AiChatProps> = ({ code }) => {
           marginBottom: "6px",
         }}
       >
-        <BaseChat  />
+        <BaseChat />
       </div>
     </ConfigProvider>
   );
 };
 export default Independent;
-

@@ -213,6 +213,13 @@ When modifying the code, the output must be in the following format! ! ! ! empha
       - Split functionality into smaller, reusable modules instead of placing everything in a single large file.
       - Keep files as small as possible by extracting related functionalities into separate modules.
       - Use imports to connect these modules together effectively.
+    16. IMPORTANT: If it's a front-end project, you need to meet
+      - Make sure the app looks exactly like the screenshot.
+      - Pay close attention to background color, text color, font size, font family, 
+      padding, margin, border, etc. Match the colors and sizes exactly.
+      - Use the exact text from the screenshot.
+      - Do not add comments in the code such as "<!-- Add other navigation links as needed -->" and "<!-- ... other news items ... -->" in place of writing the full code. WRITE THE FULL CODE.
+      - Repeat elements as needed to match the screenshot. For example, if there are 15 items, the code should have 15 items. DO NOT LEAVE comments like "<!-- Repeat for each news item -->" or bad things will happen.
     </artifact_instructions>
 </artifact_info>
 

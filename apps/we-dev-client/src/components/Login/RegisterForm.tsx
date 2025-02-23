@@ -3,6 +3,7 @@ import { FaUser, FaEnvelope, FaLock } from "react-icons/fa6";
 import { authService } from "../../api/auth";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 type RegisterFormProps = {
   onSuccess?: () => void;
@@ -19,6 +20,7 @@ const RegisterForm = ({ onSuccess, onTabChange }: RegisterFormProps) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [isRegistered, setIsRegistered] = useState(false);
+  const { t } = useTranslation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -166,7 +168,7 @@ const RegisterForm = ({ onSuccess, onTabChange }: RegisterFormProps) => {
           onClick={() => onTabChange("login")}
           className="text-[#3B82F6] hover:underline"
         >
-          Sign in
+          {t("login.sign_in")}
         </button>
       </div>
     </div>

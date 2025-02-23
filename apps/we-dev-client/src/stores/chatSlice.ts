@@ -13,7 +13,9 @@ export interface FilePreview {
 
 
 interface ChatState {
-  modelOptions: IModelOption[];
+  isDeepThinking: boolean;
+  setIsDeepThinking: (isDeepThinking: boolean) => void;
+  modelOptions: IModelOption[]; 
   setModelOptions: (v: IModelOption[]) => void;
   uploadedImages: FilePreview[];
   setUploadedImages: (images: FilePreview[]) => void;
@@ -28,6 +30,8 @@ interface ChatState {
   setOllamaConfig: (config: { url: string; apiKey?: string }) => void;
 }
 const useChatStore = create<ChatState>((set) => ({
+  isDeepThinking: false,
+  setIsDeepThinking: (isDeepThinking: boolean) => set({ isDeepThinking }),
   uploadedImages: [],
   setModelOptions: (options) => set({ modelOptions: options }),
   setUploadedImages: (images) => set({ uploadedImages: images }),

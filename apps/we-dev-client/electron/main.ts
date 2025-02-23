@@ -4,6 +4,7 @@ import { spawn } from "child_process";
 import { initialize, enable } from "@electron/remote/main";
 import fs from "fs";
 import { startLoginServer } from "./loginServer";
+import {isHiddenNodeModules} from "../config/electronOrSrcCommonConfig"
 
 // 修改日志路径到 electron 目录
 
@@ -459,16 +460,7 @@ function createWindow() {
 
         // 删除不再需要的文件（排除 node_modules）
         for (const file of existingFiles) {
-          const isHiddenNodeModules = [
-            "node_modules",
-            "dist",
-            ".swc",
-            ".next",
-            "package-lock.json",
-            "pnpm-lock.yaml",
-          ];
-          if (!isHiddenNodeModules.includes(file)) {
-            console.log("Removing file:", file);
+          if (!isHiddenNodeModules.some(item => file?.indexOf(item) > -1)) {
             await fs.unlink(file);
           }
         }

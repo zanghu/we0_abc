@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useChat } from "ai/react";
 import { toast } from "react-toastify";
 import { uploadImage } from "@/api/chat";
@@ -9,6 +9,7 @@ import { db } from "../../../utils/indexDB";
 import { v4 as uuidv4 } from "uuid";
 import { eventEmitter } from "../utils/EventEmitter";
 import { MessageItem } from "./components/MessageItem";
+import Tips from "./components/Tips";
 import { ChatInput, ChatMode } from "./components/ChatInput";
 import { parseMessage } from "../../../utils/messagepParseJson";
 import useUserStore from "../../../stores/userSlice";
@@ -21,7 +22,6 @@ import { parseMessages } from "../useMessageParser";
 import { createMpIcon } from "@/utils/createWtrite";
 import { useTranslation } from "react-i18next";
 import useChatModeStore from "../../../stores/chatModeSlice";
-import { getSystemPrompt } from "@/utils/prompt";
 import Ollama from "@/icon/Ollama";
 
 export const excludeFiles = [
@@ -39,8 +39,7 @@ export const excludeFiles = [
   "/miniprogram/components/weicon/index.wxml",
   "/miniprogram/components/weicon/icondata.js",
   "/miniprogram/components/weicon/index.css",
-]
-
+];
 
 const API_BASE = process.env.APP_BASE_URL;
 enum ModelTypes {
@@ -87,9 +86,10 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
     setFiles,
     setEmptyFiles,
     errors,
+    updateContent,
     clearErrors,
   } = useFileStore();
-  const { mode } = useChatModeStore();
+  const { mode, initOpen, setInitOpen } = useChatModeStore();
   // 使用全局状态
   const {
     uploadedImages,
@@ -113,6 +113,7 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
     ...filesInitObj,
     ...filesUpdateObj,
   });
+
   const updateConvertToBoltAction = convertToBoltAction(filesUpdateObj);
 
   // 使用 ollama 模型 获取模型列表
@@ -134,10 +135,13 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
 
   useEffect(() => {
     if (
-      (messages.length === 0 && initConvertToBoltAction) ||
+      (messages.length === 0 &&
+        initConvertToBoltAction &&
+        mode === ChatMode.Builder) ||
       (messages.length === 1 &&
         messages[0].id === "1" &&
-        initConvertToBoltAction)
+        initConvertToBoltAction &&
+        mode === ChatMode.Builder)
     ) {
       setMessages([
         {
@@ -150,7 +154,11 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
   }, [initConvertToBoltAction]);
 
   useEffect(() => {
-    if (messages.length > 1 && updateConvertToBoltAction) {
+    if (
+      messages.length > 1 &&
+      updateConvertToBoltAction &&
+      mode === ChatMode.Builder
+    ) {
       setMessages((list) => {
         const newList = [...list];
         if (newList[newList.length - 1].id !== "2") {
@@ -181,21 +189,27 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
         const latestRecord = records[0];
         if (latestRecord?.data?.messages) {
           const historyFiles = {};
+          setEmptyFiles();
+          ipcRenderer.invoke("node-container:set-now-path", "");
           latestRecord.data.messages.forEach((message) => {
             const { files: messageFiles } = parseMessage(message.content);
             Object.assign(historyFiles, messageFiles);
           });
-          latestRecord.data.messages.push({
-            id: uuidv4(),
-            role: "user",
-            content: `<boltArtifact id="hello-js" title="the current file">\n${convertToBoltAction(historyFiles)}\n</boltArtifact>\n\n`,
-          });
+          if (mode === ChatMode.Builder) {
+            latestRecord.data.messages.push({
+              id: uuidv4(),
+              role: "user",
+              content: `<boltArtifact id="hello-js" title="the current file">\n${convertToBoltAction(historyFiles)}\n</boltArtifact>\n\n`,
+            });
+          }
           setMessages(latestRecord.data.messages);
           setFiles(historyFiles);
           // 重置其他状态
+  
           clearImages();
           setIsFirstSend();
           setIsUpdateSend();
+          newTerminal();
         }
       } else {
         // 如果是新对话，清空所有状态
@@ -249,7 +263,7 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
     baseModal.from === "ollama" ? `${ollamaConfig.url}` : `${API_BASE}`;
   // 修改 useChat 配置
   const {
-    messages,
+    messages: realMessages,
     input,
     handleInputChange,
     isLoading,
@@ -311,8 +325,6 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
       }
     },
     onFinish: async (message: any) => {
-      setIsFirstSend();
-      setIsUpdateSend();
       clearImages();
       scrollToBottom();
       try {
@@ -329,7 +341,7 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
         await db.insert(chatUuid, {
           messages: [...initMessage, ...messages, message],
           title:
-            messages
+            [ ...initMessage, ...messages]
               .find(
                 (m) => m.role === "user" && !m.content.includes("<boltArtifact")
               )
@@ -377,7 +389,8 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
   }, [isLoading, files])
 
   useEffect(() => {
-    if (Date.now() - parseTimeRef.current > 500 && isLoading) {
+    if (Date.now() - parseTimeRef.current > 50 && isLoading) {
+      setMessagesa(realMessages);
       parseTimeRef.current = Date.now();
 
       const needParseMessages = messages.filter((m) => !refUuidMessages.current.includes(m.id));
@@ -388,10 +401,12 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
       clearErrors();
     }
     if (!isLoading) {
-
       createMpIcon(files);
     }
-  }, [messages, isLoading]);
+    if (initOpen && realMessages.length > 0) {
+      setInitOpen(false);
+    }
+  }, [realMessages, isLoading, initOpen]);
 
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
@@ -619,14 +634,12 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
     }
   };
 
-  return (
-    <div
-      className="flex flex-col h-full   dark:bg-[rgba(30,30,30)] max-w-full"
-      onDragOver={handleDragOver}
-      onDrop={handleDrop}
-    >
+
+  const showJsx = useMemo(() => {
+    return (
       <div className="flex-1 overflow-y-auto px-1 py-2 message-container [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         <div className="max-w-[640px] w-full mx-auto space-y-3">
+          <Tips append={append} setInput={setInput} handleFileSelect={handleFileSelect} />
           {messages.map((message, index) => (
             <MessageItem
               key={`${message.id}-${index}`}
@@ -678,7 +691,24 @@ export const BaseChat = ({ uuid: propUuid }: { uuid?: string }) => {
           <div ref={messagesEndRef} className="h-px" />
         </div>
       </div>
+    );
+  }, [
+    messages,
+    isLoading,
+    setInput,
+    handleFileSelect
+  ]);
 
+  return (
+    <div
+      className={`flex flex-col dark:bg-[rgba(30,30,30)] max-w-full` }
+      style={{
+        height: `${initOpen ? "auto" : "100%"}`,
+      }}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+    >
+      {showJsx}
       <ChatInput
         input={input}
         isLoading={isLoading}

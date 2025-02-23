@@ -3,6 +3,8 @@ import { useFileStore } from '../../stores/fileStore';
 import { getWebContainerInstance } from './instance';
 import { debounce } from 'lodash';
 
+import {isHiddenNodeModules} from "../../../../../config/electronOrSrcCommonConfig"
+
 // 存储文件的 MD5 值
 const fileHashMap = new Map<string, string>();
 
@@ -104,8 +106,8 @@ const readDirRecursive = async (
 
   for (const entry of entries) {
     const fullPath = `${dirPath}/${entry.name}`;
-    const isHiddenNodeModules = ['node_modules', 'dist', '.swc', '.next', 'package-lock.json', 'pnpm-lock.yaml']
-    if (isHiddenNodeModules.includes(entry.name)) continue;
+
+    if (isHiddenNodeModules.some(item => entry?.name?.indexOf(item) > -1)) continue;
 
     if (entry.isDirectory()) {
       const subFiles = await readDirRecursive(instance, fullPath, filesObj);

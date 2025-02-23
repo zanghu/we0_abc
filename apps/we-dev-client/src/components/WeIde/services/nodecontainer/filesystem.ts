@@ -2,6 +2,8 @@ const ipcRenderer = (window as any)?.electron?.ipcRenderer;
 import { useFileStore } from '../../stores/fileStore';
 import { add, debounce } from 'lodash';
 
+import {isHiddenNodeModules} from "../../../../../config/electronOrSrcCommonConfig"
+
 // 存储文件的 MD5 值
 (window as any).fileHashMap = new Map<string, string>();
 
@@ -24,13 +26,16 @@ async function readDirRecursive(
   const files: { path: string; content: string }[] = [];
   const entries = await ipcRenderer.invoke('node-container:readdir', dirPath);
   
+  console.log(entries, 'entries')
   for (const entry of entries) {
     const fullPath = dirPath + (dirPath.endsWith('/') ? '' : '/') + entry;
-    const isHiddenNodeModules = ['node_modules', 'dist', '.swc', '.next', 'package-lock.json', 'pnpm-lock.yaml']
-    if (isHiddenNodeModules.includes(entry)) continue;
-    
+   
+    console.log(isHiddenNodeModules.some(item => entry.indexOf(item) > -1), 'asdasd')
+    if (isHiddenNodeModules.some(item => entry.indexOf(item) > -1)) continue;
+
     try {
       const stats = await ipcRenderer.invoke('node-container:stat', fullPath);
+
       if (stats && stats.isDirectory) {
         const subFiles = await readDirRecursive(fullPath, filesObj, projectRoot);
         files.push(...subFiles);
@@ -41,6 +46,7 @@ async function readDirRecursive(
         const oldHash = (window as any).fileHashMap.get(fullPath);
         const fileHash = await calculateMD5(filesObj[fullPath.replace((projectRoot.startsWith('/') ? projectRoot.substring(1) : projectRoot)  + '/', '').substring(1)] || '&empty');
 
+        console.log(oldHash, newHash, fileHash, '2123123')
         if ((oldHash !== newHash && fileHash !== newHash)) {
           files.push({
             path: fullPath.startsWith('/') ? fullPath.slice(1) : fullPath,
@@ -63,8 +69,9 @@ const debouncedUpdateFileSystem = debounce(async () => {
 
   try {
     const projectRoot = await ipcRenderer.invoke('node-container:get-project-root');
+
     const files = await readDirRecursive(projectRoot, filesObj, projectRoot);
-    // console.log(projectRoot, 'projectRoot');
+    console.log(files, projectRoot, 'systemfiles');
 
     // 更新文件存储
     if (files.length > 0) {
