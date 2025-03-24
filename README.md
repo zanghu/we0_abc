@@ -101,43 +101,9 @@ How to Use the Client Version?
 
 - mac version
   1. Go to https://we0.ai/.
-  2. Select Download for Mac to download the installer.
-  3. You might encounter an issue:
-  
-     ![alt text](./docs/img/image-2.png)
-     
-- Open Launchpad, select Terminal, and enter:
-  ```bash
-  sudo spctl  --master-disable
-  ```
-  then press Enter, enter your password (the password input is invisible), and press Enter again.
-  
-  Next, open System Preferences, select Security & Privacy, then General, and you will see Anywhere selected.
-  Then open the file to install.
-  ![alt text](./docs/img/image-3.png)
-
-
-- If it still shows "Damaged and cannot be opened. You should move it to the Trash" 
-
-  don't worry. Use the following method:
-
-  Copy and paste the command in the terminal (note the space at the end):
-
-  ```bash
-  sudo xattr -r -d com.apple.quarantine
-  ```
-
-  **Do not press Enter yet! Do not press Enter yet! Do not press Enter yet! Do not press Enter yet!**
-
-  Then open Finder, go to the Applications directory, find the software icon, and drag it into the terminal window. You will get a combination like this (as shown in the image):
-
-  ```bash
-  sudo xattr -r -d com.apple.quarantine /Applications/WebStrom.app 
-  ```
-
-  Return to the terminal window, press Enter, and enter your system password to proceed.
-
-
+  2. Select Download for Mac or Windows to download the installer.
+  3. Run the installer.
+  4. Open the We0 application.
 ## Question
 - If electron reports an error during the second run, please delete the client workspace
 - electron If there is no preview when starting, run pnpm run electron:dev
