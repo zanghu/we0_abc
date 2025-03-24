@@ -91,8 +91,6 @@ chmod +x scripts/wedev-build.sh
 ## 如何安装使用
 
 客户端版本如何使用？
-
-- mac 版本
   1. 进入到https://we0.ai/ 页面
   2. 选择 Download for Mac  或 Windows下载二进制包
   3. 开始使用

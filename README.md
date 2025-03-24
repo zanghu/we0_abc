@@ -96,10 +96,6 @@ Supports quick start from the root directory.
 
 
 ## How to Install and Use
-
-How to Use the Client Version?
-
-- mac version
   1. Go to https://we0.ai/.
   2. Select Download for Mac or Windows to download the installer.
   3. Run the installer.
