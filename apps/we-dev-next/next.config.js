@@ -1,5 +1,9 @@
 import { createMDX } from "fumadocs-mdx/next";
+import nextIntlPlugin from 'next-intl/plugin';
+
 const withMDX = createMDX();
+
+const withNextIntl = nextIntlPlugin('./i18n.ts');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -19,11 +23,7 @@ const nextConfig = {
           {
             key: "Access-Control-Allow-Headers",
             value:
-              "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization",
-          },
-          {
-            key: "Access-Control-Allow-Credentials",
-            value: "true",
+              "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
           },
         ],
       },
@@ -40,4 +40,4 @@ const nextConfig = {
   reactStrictMode: true,
 };
 
-export default withMDX(nextConfig);
+export default withNextIntl(withMDX(nextConfig));

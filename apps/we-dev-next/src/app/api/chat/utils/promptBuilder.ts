@@ -1,17 +1,19 @@
-import { typeEnum, getSystemPrompt } from "../prompt";
+import { typeEnum, getSystemPrompt,promptExtra } from "../prompt";
 
 export function buildMaxSystemPrompt(
   filesPath: string[], 
   type: typeEnum, 
   files: Record<string, string>, 
-  diffString: string
+  diffString: string,
+  otherConfig:promptExtra
 ): string {
-  return `当前文件目录树：${filesPath.join("\n")}\n\n,你只能修改目录树里面的内容，要求：${getSystemPrompt(type)}
-当前需求文件内容:\n${JSON.stringify(files)}${diffString ? `,diff:\n${diffString}` : ""}`;
+  return `Current file directory tree: ${filesPath.join("\n")}\n\n,You can only modify the contents within the directory tree, requirements: ${getSystemPrompt(type,otherConfig)}
+Current requirement file contents:\n${JSON.stringify(files)}${diffString ? `,diff:\n${diffString}` : ""}`;
 } 
 
 export function buildSystemPrompt(
   type: typeEnum, 
+  otherConfig:promptExtra
 ): string {
-  return `${getSystemPrompt(type)}`;
+  return `${getSystemPrompt(type,otherConfig)}`;
 } 

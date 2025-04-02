@@ -54,7 +54,7 @@ class Terminal {
   }
 
   // Initialize terminal
-  public async initialize(container: HTMLElement, processId: string) {
+  public async initialize(container: HTMLElement, processId: string, addError?: (error: any) => void) {
     if (this.initialized || !container) return; // Avoid repeated initialization
 
     this.initialized = true; // Mark as initialized
@@ -84,11 +84,43 @@ class Terminal {
     term.open(container);
     fitAddon.fit();
 
+    term.onSelectionChange(() => {  
+      // When text is selected, it can be copied using Ctrl+C
+      if (term.hasSelection()) {  
+        const selection = term.getSelection()  
+        console.log('Selected text:', selection)  
+      }  
+    })  
+
+    // Listen for keyboard events
+    term.attachCustomKeyEventHandler((event) => {  
+      // Check if it's a copy operation (Ctrl for Windows/Linux, Command for Mac)
+      const isCopyAction = (event.ctrlKey || event.metaKey) && event.key === 'c';
+      if (isCopyAction && term.hasSelection()) {  
+        const selection = term.getSelection();
+        navigator.clipboard.writeText(selection);
+        event.preventDefault();
+        event.stopPropagation();
+        return false; // Prevent default behavior
+      }  
+      
+      // Check if it's a paste operation (Ctrl for Windows/Linux, Command for Mac)
+      const isPasteAction = (event.ctrlKey || event.metaKey) && event.key === 'v';
+      if (isPasteAction) {  
+        navigator.clipboard.readText().then(text => {  
+          term.paste(text);
+        });
+        return false; // Prevent default behavior
+      }  
+      
+      return true; // Allow other keyboard events
+    });  
+
     term.writeln('\x1b[1;32mWelcome to Terminal\x1b[0m');
     term.writeln('Type \x1b[1;34mhelp\x1b[0m for a list of commands\n');
     term.write('$ ');
 
-    await this.waitCommand();
+    await this.waitCommand(addError);
 
     this.isReady = true;
 
@@ -184,7 +216,7 @@ class Terminal {
     output?.pipeTo(
       new WritableStream({
         write: (data) => {
-          if (data.includes('error') && addError) {
+          if ((data.includes('error') || data.includes('failure')) && addError) {
             addError({
               message: 'compile error',
               code: this.stripAnsi(data),
@@ -223,7 +255,7 @@ class Terminal {
     electron.ipcRenderer.on(`terminal-output-${processId}`, (data: string) => {
       updateFileSystemNow();
       this.terminal?.write(data);
-      if (data.includes('error') && addError) {
+      if ((data.includes('error') || data.includes('failure')) && addError) {
         addError({
           message: 'compile error',
           code: this.stripAnsi(data),

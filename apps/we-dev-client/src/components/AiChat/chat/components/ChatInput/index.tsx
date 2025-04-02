@@ -15,7 +15,6 @@ import useChatModeStore from "../../../../../stores/chatModeSlice";
 import useChatStore from "@/stores/chatSlice";
 import useThemeStore from "@/stores/themeSlice";
 import { v4 as uuidv4 } from "uuid";
-import track from "@/utils/track";
 import OptimizedPromptWord from "./OptimizedPromptWord";
 import useUserStore from "@/stores/userSlice";
 // import type { ModelOption } from './UploadButtons';
@@ -33,7 +32,10 @@ export const ChatInput: React.FC<ChatInputPropsType> = ({
   stopRuning,
   isLoading,
   isUploading,
+  append,
   uploadedImages,
+  setMessages,
+  messages,
   handleInputChange,
   handleKeySubmit,
   handleSubmitWithFiles,
@@ -390,7 +392,9 @@ export const ChatInput: React.FC<ChatInputPropsType> = ({
           onRemoveImage={removeImage}
         />
 
+          <div className="flex flex-row">
         <OptimizedPromptWord input={input} setInput={setInput}></OptimizedPromptWord>
+        </div>
 
         <div className="relative bg-transparent dark:bg-[#1a1a1c] rounded-lg border border-gray-600/30">
           <div
@@ -498,13 +502,18 @@ export const ChatInput: React.FC<ChatInputPropsType> = ({
               </div>
             )}
 
+
             <div className="flex items-center justify-between px-2 py-2 border-t border-gray-600/30">
               <div className="flex items-center">
                 <UploadButtons
                   isLoading={isLoading}
                   isUploading={isUploading}
                   baseModal={baseModal}
+                  setMessages={setMessages}
+                  append={append}
+                  messages={messages}
                   setBaseModal={setBaseModal}
+                  handleSubmitWithFiles={handleSubmitWithFiles}
                   onImageClick={() => fileInputRef.current?.click()}
                   onSketchClick={() => sketchInputRef.current?.click()}
                 />
@@ -558,7 +567,8 @@ export const ChatInput: React.FC<ChatInputPropsType> = ({
           multiple
           accept="image/*"
         />
-
+        
+        {/* fileInputRef这个应该是没有用的（没验证） */}
         <input
           ref={sketchInputRef}
           type="file"

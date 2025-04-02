@@ -26,7 +26,6 @@ export const useEditorScroll = ({
 
     scroller.addEventListener("scroll", handleScroll);
 
-    // 处理内容更新
     view.dispatch({
       changes: {
         from: 0,
@@ -35,7 +34,6 @@ export const useEditorScroll = ({
       },
     });
 
-    // 自动滚动逻辑
     if (fileContent.length > prevContentRef.current.length) {
       const isNearBottom =
         scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight <

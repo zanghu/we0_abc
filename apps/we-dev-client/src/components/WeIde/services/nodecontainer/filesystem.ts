@@ -25,12 +25,10 @@ async function readDirRecursive(
 ): Promise<{ path: string; content: string }[]> {
   const files: { path: string; content: string }[] = [];
   const entries = await ipcRenderer.invoke('node-container:readdir', dirPath);
-  
-  console.log(entries, 'entries')
+
   for (const entry of entries) {
     const fullPath = dirPath + (dirPath.endsWith('/') ? '' : '/') + entry;
-   
-    console.log(isHiddenNodeModules.some(item => entry.indexOf(item) > -1), 'asdasd')
+
     if (isHiddenNodeModules.some(item => entry.indexOf(item) > -1)) continue;
 
     try {
@@ -70,7 +68,6 @@ const debouncedUpdateFileSystem = debounce(async () => {
     const projectRoot = await ipcRenderer.invoke('node-container:get-project-root');
 
     const files = await readDirRecursive(projectRoot, filesObj, projectRoot);
-    console.log(files, projectRoot, 'systemfiles');
 
     // Update file storage
     if (files.length > 0) {

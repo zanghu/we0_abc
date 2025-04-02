@@ -10,6 +10,8 @@ export interface ErrorMessage {
 
 interface FileStore {
   files: Record<string, string>;
+  setOldFiles: (files: Record<string, string>) => void;
+  oldFiles: Record<string, string>;
   errors: ErrorMessage[];
   addError: (error: ErrorMessage) => void;
   removeError: (index: number) => void;
@@ -39,13 +41,16 @@ interface FileStore {
 
 }
 
-const initialFiles = {
-
-};
+const initialFiles = {};
 
 export const useFileStore = create<FileStore>((set, get) => ({
   files: initialFiles,
   errors: [],
+  oldFiles: initialFiles,
+  setOldFiles: async (oldFiles: Record<string, string>) => {
+    // 从错误信息来看，需要在 FileStore 接口中添加 oldFiles 属性和 setOldFiles 方法
+    set({ oldFiles })
+  },
   addError: (error) => {
     if (window.isLoading) {
       return;

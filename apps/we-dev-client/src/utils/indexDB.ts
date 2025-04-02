@@ -18,27 +18,27 @@ export class DBManager {
   private listeners: Set<DBEventListener> = new Set();
 
   constructor() {
-    // 检查环境
+    // Check environment
     if (this.isElectron()) {
       console.log('Running in Electron environment');
-      // 在 Electron 中使用 localStorage 作为备选
+      // Use localStorage as fallback in Electron
       this.initLocalStorage();
     } else {
       this.init().then(() => {
-        console.log('DBManager 初始化完成');
+        console.log('DBManager initialization completed');
       }).catch((error) => {
-        console.error('DBManager 初始化失败', error);
+        console.error('DBManager initialization failed', error);
       });
     }
   }
 
   private isElectron() {
-    // 检查是否在 Electron 环境中
-  return window.electron
+    // Check if running in Electron environment
+    return window.electron
   }
 
   private initLocalStorage() {
-    // 初始化 localStorage
+    // Initialize localStorage
     if (!localStorage.getItem('chatRecords')) {
       localStorage.setItem('chatRecords', JSON.stringify([]));
     }
@@ -50,12 +50,12 @@ export class DBManager {
         const request = indexedDB.open(this.DB_NAME, 1);
 
         request.onerror = (event) => {
-          console.error('数据库打开失败:', event);
+          console.error('Failed to open database:', event);
           reject(request.error);
         };
 
         request.onupgradeneeded = (event) => {
-          console.log('数据库升级中...');
+          console.log('Upgrading database...');
           const db = (event.target as IDBOpenDBRequest).result;
           if (!db.objectStoreNames.contains(this.STORE_NAME)) {
             const store = db.createObjectStore(this.STORE_NAME, { keyPath: ['uuid', 'time'] });
@@ -65,28 +65,28 @@ export class DBManager {
         };
 
         request.onsuccess = () => {
-          console.log('数据库打开成功');
+          console.log('Database opened successfully');
           this.db = request.result;
           resolve();
         };
 
       } catch (error) {
-        console.error('数据库初始化错误:', error);
+        console.error('Database initialization error:', error);
         reject(error);
       }
     });
   }
 
-  // 获取所有不重复的 UUID
+  // Get all unique UUIDs
   async getAllUuids(): Promise<string[]> {
     if (this.isElectron()) {
       const records = JSON.parse(localStorage.getItem('chatRecords') || '[]') as ChatRecord[];
       const uuids = Array.from(new Set(
         records.sort((a, b) => b.time - a.time)
           .map(record => record.uuid)
-      )).slice(0, 20);
+      )).slice(0, 300);
 
-      if (uuids.length === 20) {
+      if (uuids.length === 300) {
         this.cleanOldRecords(uuids);
       }
 
@@ -104,9 +104,9 @@ export class DBManager {
         const uuids = Array.from(new Set(
           records.sort((a, b) => b.time - a.time)
             .map(record => record.uuid)
-        )).slice(0, 20);
+        )).slice(0, 300);
 
-        if (uuids.length === 20) {
+        if (uuids.length === 300) {
           this.cleanOldRecords(uuids);
         }
 
@@ -116,7 +116,7 @@ export class DBManager {
     });
   }
 
-  // 插入信息
+  // Insert message
   async insert(uuid: string, data: ChatRecord['data']): Promise<void> {
     const record: ChatRecord = {
       data,
@@ -146,7 +146,7 @@ export class DBManager {
     });
   }
 
-  // 删除指定 UUID 的所有内容
+  // Delete all content for specified UUID
   async deleteByUuid(uuid: string): Promise<void> {
     if (this.isElectron()) {
       const records = JSON.parse(localStorage.getItem('chatRecords') || '[]') as ChatRecord[];
@@ -184,7 +184,7 @@ export class DBManager {
     });
   }
 
-  // 读取指定 UUID 的所有内容
+  // Read all content for specified UUID
   async getByUuid(uuid: string): Promise<ChatRecord[]> {
     if (this.isElectron()) {
       const records = JSON.parse(localStorage.getItem('chatRecords') || '[]') as ChatRecord[];
@@ -213,12 +213,12 @@ export class DBManager {
     }
 
     if (!this.db) {
-      console.log('数据库未初始化，正在初始化...');
+      console.log('Database not initialized, initializing...');
       try {
         await this.init();
-        console.log('数据库初始化完成');
+        console.log('Database initialization completed');
       } catch (error) {
-        console.error('数据库初始化失败:', error);
+        console.error('Database initialization failed:', error);
         throw error;
       }
     }

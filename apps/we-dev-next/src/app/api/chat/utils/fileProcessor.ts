@@ -17,18 +17,20 @@ export const excludeFiles = [
   "/miniprogram/components/weicon/index.css",
 ]
 
-export function processFiles(messages: Messages) {
+export function processFiles(messages: Messages, cleatText: boolean = false) {
   const files: { [key: string]: string } = {};
   let allContent = "";
 
   messages.forEach((message) => {
     allContent += message.content;
-    const { content, files: messageFiles } = parseMessage(message.content);
+    const { files: messageFiles, content } = parseMessage(message.content);
+    if (cleatText) {
+      message.content = content;
+    }
     if (typeof messageFiles === "object") {
       excludeFiles.forEach(file => delete messageFiles[file]);
     }
     Object.assign(files, messageFiles);
   });
-
   return { files, allContent };
 } 

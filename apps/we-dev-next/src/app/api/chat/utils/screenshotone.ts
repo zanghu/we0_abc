@@ -28,8 +28,7 @@ export const screenshotOne = async (targetUrl: string) => {
       headers: {
         'Accept': 'image/png',
       },
-      // 设置较长的超时时间
-      signal: AbortSignal.timeout(60000), // 60 秒超时
+      signal: AbortSignal.timeout(60000), 
     });
 
     if (!response.ok) {

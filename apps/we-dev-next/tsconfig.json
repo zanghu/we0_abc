@@ -42,7 +42,7 @@
     ".next/types/**/*.ts",
     "./src/utils/messagepParseJson.ts",
     "next.config.mjs"
-  ],
+, "src/components/Postcard/postcard.jsx"  ],
   "exclude": [
     "node_modules"
   ]

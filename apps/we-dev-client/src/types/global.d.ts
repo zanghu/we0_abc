@@ -1,4 +1,6 @@
 import { PostHog } from "posthog-js";
+import {MCPServer, MCPTool} from "@/types/mcp";
+import {HookAPI} from "antd/es/modal/useModal";
 
 declare global {
   interface Window {
@@ -9,10 +11,29 @@ declare global {
     electron: {
       ipcRenderer: IpcRenderer;
     }
+    modal: HookAPI
     myAPI: {
       dialog: {
         showOpenDialog: (options: { properties: string[] }) => Promise<{ canceled: boolean; filePaths: string[] }>;
       };
+      mcp: {
+        // servers
+        listServers: () => Promise<MCPServer[]>
+        addServer: (server: MCPServer) => Promise<void>
+        updateServer: (server: MCPServer) => Promise<void>
+        deleteServer: (serverName: string) => Promise<void>
+        setServerActive: (name: string, isActive: boolean) => Promise<void>
+        setServers: (servers: MCPServer[]) => void
+        // tools
+        listTools: () => Promise<MCPTool[]>
+        callTool: ({ client, name, args }: { client: string; name: string; args: any }) => Promise<any>
+        // status
+        cleanup: () => Promise<void>
+      };
+      isBinaryExist: (name: string) => Promise<boolean>
+      getBinaryPath: (name: string) => Promise<string>
+      installUVBinary: () => Promise<void>
+      installBunBinary: () => Promise<void>
     };
   }
 
@@ -47,7 +68,20 @@ declare global {
     | 'terminal:write'
     | 'terminal:resize'
     | 'terminal:dispose'
-    | 'open:external:url';
+    | 'open:external:url'
+    | 'mcp:list-servers'
+    | 'mcp:add-server'
+    | 'mcp:update-server'
+    | 'mcp:delete-server'
+    | 'mcp:set-server-active'
+    | 'mcp:list-tools'
+    | 'mcp:call-tool'
+    | 'mcp:cleanup'
+    | 'mcp:servers-from-renderer'
+    | 'app:is-binary-exist'
+    | 'app:get-binary-path'
+    | 'app:install-uv-binary'
+    | 'app:install-bun-binary';
 
   // 文件系统相关类型
   interface FileStats {

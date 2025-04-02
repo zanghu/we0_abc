@@ -2,6 +2,7 @@ import { allowedHTMLElements } from "@/utils/markdown";
 import { stripIndents } from "../../../utils/stripIndent";
 import { databaseeFunctionRegister } from "./database";
 import { backendLanguageFunctionRegister } from "./backend";
+import { cacheFunctionRegister } from "./cache";
 export const WORK_DIR_NAME = "project";
 export const WORK_DIR = `/home/${WORK_DIR_NAME}`;
 export const MODIFICATIONS_TAG_NAME = "bolt_file_modifications";
@@ -95,9 +96,23 @@ export enum typeEnum {
   Other = "other",
 }
 export interface promptExtra {
-  isBackend: boolean;
+  isBackEnd: boolean;
   backendLanguage: string;
   extra: object;
+}
+export interface ParametersSchema {
+  type: string
+  title?: string
+  description?: string,
+  required?: string[]
+  properties: Record<string, object>
+}
+
+export interface ToolInfo {
+  id: `${string}.${string}`,
+  name: string,
+  description?: string,
+  parameters: ParametersSchema
 }
 const getExtraPrompt = (
   type: typeEnum,
@@ -106,63 +121,80 @@ const getExtraPrompt = (
 ) => {
   const promptArr = [];
   promptArr.push(
-    `IMPORTANT: 所有代码必须是完整代码，不要生成代码片段,而且不要Markdown`
+    `IMPORTANT: All code must be complete code, do not generate code snippets, and do not use Markdown`
   );
 
   if (type === typeEnum.MiniProgram) {
-    // promptArr.push(`IMPORTANT: 并且返回小程序支持的文件路径和文件内容`);
     promptArr.push(
-      `IMPORTANT: 任何所有用到图片的地方都用weui的icon库实现，使用用法 例如<we-icon type="field" icon="add" color="black" size="{{24}}"></we-icon>, size必须是24px,其中icon只有${iconName.join(
+      `IMPORTANT: For any place that uses images, implement using weui's icon library, usage example: <we-icon type="field" icon="add" color="black" size="{{24}}"></we-icon>, size must be 24px, where icon can only be ${iconName.join(
         ","
-      )}这些情况，请根据合适的场景选择合适的icon`
+      )}, please choose appropriate icon based on the scenario`
     );
     promptArr.push(
-      `IMPORTANT: 如果需要使用图片，必须要在当前目录下的.json文件里面写入 /components/weicon/index`
+      `IMPORTANT: If images need to be used, you must write /components/weicon/index in the current directory's .json file`
     );
     promptArr.push(
-      `IMPORTANT: 如果小程序需要tabbar，生成自定义底部tabbar组件 custom-tab-bar，来代替原生app.json里面的tabbar,并且页面的json文件需要指定custom-tab-bar路径，同时tabbar里面用到的图片也要使用weicon的`
+      `IMPORTANT: If the mini program needs a tabbar, generate a custom bottom tabbar component custom-tab-bar to replace the native app.json tabbar, and the page's json file needs to specify the custom-tab-bar path, while images used in the tabbar should also use weicon`
     );
-    // promptArr.push(`IMPORTANT: If the bottom tabbar is used, the tabbar needs to be implemented with a custom custom-tab-bar component.`)
-    // promptArr.push(`IMPORTANT: wx tabbar’s app.json should avoid having the same path`)
   }
   if (type === typeEnum.Other) {
     promptArr.push(`IMPORTANT: If you are a react project, you must use import React from 'react' to introduce react
 `);
-    // promptArr.push(`IMPORTANT: 如果是前端项目package.json里面必须有dev和start命令`)
   }
-
 
   if (extra) {
     const ret = resolveExtra(extra);
-    ret.forEach((element) => {
-      promptArr.push(element);
-    });
+    promptArr.unshift(...ret);
   }
-  let prompt = "";
-  for (let index = 0; index < promptArr.length; index++) {
-    prompt += `${index + startNum}. ${promptArr[index]}\n`;
+  
+  let prompt = '';
+  for(let index = 0; index<promptArr.length;index++){
+    prompt+=`${index+startNum}. ${promptArr[index]}\n`
   }
+  console.log(prompt,'prompt')
   return prompt;
 };
 
 function resolveExtra(extra: promptExtra) {
   const promptArr = [];
-  if (extra.isBackend ?? false) {
-    const language = extra.backendLanguage ?? "java";
-    const database = extra.extra["database"] ?? "mysql";
-    const backPromptArr = backendLanguageFunctionRegister[language](extra); //策略模式后端执行
-    const databasePromptArr = databaseeFunctionRegister[database](extra); //策略模式数据库执行
-    promptArr.push(...backPromptArr);
-    promptArr.push(...databasePromptArr);
-    promptArr.push(
-      "对接好前端接入后端，将前端的抽象到一个api.js中，并且将前后端文件区分开，前端文件放到src下，package.json放到当前目录，后端文件放到backend中。"
-    );
+  if(extra.isBackEnd){
+    promptArr.push("IMPORTANT: You must generate backend code, do not only generate frontend code")
+    promptArr.push("IMPORTANT: Backend must handle CORS for all domains")
+      let language = (extra.backendLanguage || 'java').toLocaleLowerCase();
+      if(language == ''){
+        language = 'java';
+      }
+      const backPromptArr  = backendLanguageFunctionRegister[language](extra) //Strategy pattern backend execution
+      promptArr.push(...backPromptArr);
+
+      if(extra.extra['isOpenDataBase']??false){
+          let database = (extra.extra['database']??"mysql").toLocaleLowerCase();
+          if(database == ''){
+            database = 'mysql';
+          }
+          const databasePromptArr = databaseeFunctionRegister[database](extra) //Strategy pattern database execution
+          promptArr.push(...databasePromptArr);
+      }else{
+        promptArr.push("IMPORTANT: Backend does not need database, use Map for storage")
+      }
+      if(extra.extra['isOpenCache']??false){
+        let cache = extra.extra['cache']??"redis"
+        if(cache == ''){
+          cache = 'redis';
+        }
+        const cachePromptArr = cacheFunctionRegister[cache](extra) //Strategy pattern cache execution
+        promptArr.push(...cachePromptArr);
+    }
+
+      promptArr.push(`IMPORTANT: Write the defined interfaces into a json file named api.json, json (URL with complete ip+port) format as {"id":"root","name":"APICollection","type":"folder","children":[{"id":"folder-1","type":"folder","name":""//folder name,"children":[{"id":"1","type":"api","name":"","method":"",//GET"url":"","headers":[{"key":"","value":""}],"query":[{"key":"","value":""}],"cookies":[{"key":"","value":""}]},{"id":"2","type":"api","name":"",//API name"method":"",//POSTorPUTorDELETE"url":"","headers":[{"key":"","value":""}],"query":[{"key":"","value":""}],"cookies":[{"key":"","value":""}],"bodyType":"",//jsonorformDataorurlencodedorrawornoneorbinary"body":{"none":"","formData":[],"urlencoded":[],"raw":"","json":{},"binary":null}}]}]}`)
+      promptArr.push("IMPORTANT: Use localhost for backend address, do not use remote ip addresses, especially not database ones, connect frontend to backend, abstract frontend-backend interface connections into an api.js, and separate frontend and backend files, put frontend files under src, package.json in current directory, backend files in backend directory.")
+
   }
   return promptArr;
 }
 
-export const getSystemPrompt = (type: typeEnum) => `
-You are Bolt, an expert AI assistant and exceptional senior software developer with vast knowledge across multiple programming languages, frameworks, and best practices.
+export const getSystemPrompt = (type: typeEnum,otherConfig:promptExtra) => `
+You are We0 AI, an expert AI assistant and exceptional senior software developer with vast knowledge across multiple programming languages, frameworks, and best practices.
 When modifying the code, the output must be in the following format! ! ! ! emphasize! ! ! ! ! ! ! ! ! ! ! !
 <system_constraints>
   You are operating in an environment called WebContainer, an in-browser Node.js runtime that emulates a Linux system to some degree. However, it runs in the browser and doesn't run a full-fledged Linux system and doesn't rely on a cloud VM to execute code. All code is executed in the browser. It does come with a shell that emulates zsh. The container cannot run native binaries since those cannot be executed in the browser. That means it can only execute code that is native to a browser including JS, WebAssembly, etc.
@@ -370,18 +402,7 @@ When modifying the code, the output must be in the following format! ! ! ! empha
       - Use imports to connect these modules together effectively.
 
     15. IMPORTANT: 当要使用npm install 或者npm run dev的时候，这个命令需要放在生成代码的最后
-     16. IMPORTANT: If it's a front-end project, you need to meet
-      - Make sure the app looks exactly like the screenshot.
-      - Pay close attention to background color, text color, font size, font family, 
-      padding, margin, border, etc. Match the colors and sizes exactly.
-      - Use the exact text from the screenshot.
-      - Do not add comments in the code such as "<!-- Add other navigation links as needed -->" and "<!-- ... other news items ... -->" in place of writing the full code. WRITE THE FULL CODE.
-      - Repeat elements as needed to match the screenshot. For example, if there are 15 items, the code should have 15 items. DO NOT LEAVE comments like "<!-- Repeat for each news item -->" or bad things will happen.
->>>>>>> main
-=======
-     15. IMPORTANT: 当要使用npm install 或者npm run dev的时候，这个命令需要放在生成代码的最后
->>>>>>> origin/dev
-    ${getExtraPrompt(type)}
+    ${getExtraPrompt(type,15,otherConfig)}
     </artifact_instructions>
 </artifact_info>
 

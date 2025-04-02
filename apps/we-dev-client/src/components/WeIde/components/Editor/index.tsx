@@ -39,7 +39,6 @@ export const Editor = ({ fileName, initialLine }: EditorProps) => {
         editor-container h-full w-full overflow-hidden
         [&_.cm-editor]:!bg-[#ffffff] [&_.cm-editor]:dark:!bg-[#18181a]
         [&_.cm-scroller]:!font-mono
-        
         /* 行号和边栏区域 */
         [&_.cm-gutters]:!bg-[#f5f5f5] [&_.cm-gutters]:dark:!bg-[#18181a]
         [&_.cm-gutters]:border-r [&_.cm-gutters]:border-[#e5e5e5] [&_.cm-gutters]:dark:border-[#3c3c3c]

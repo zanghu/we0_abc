@@ -23,11 +23,13 @@ Multi-platform support: Supports Windows and Mac operating systems for client do
 | Feature                                    | we0 | v0  | bolt.new |
 | ------------------------------------------ | --- | --- | -------- |
 | Code generation and preview                | ✅  | ✅  | ✅       |
-| Design-to-code conversion                  | ✅  | ✅  | ❌       |
+| Design-to-code conversion(no open)         | ✅  | ✅  | ✅       |
 | Open-source                                | ✅  | ❌  | ✅       |
 | Supports WeChat Mini Program Tools preview | ✅  | ❌  | ❌       |
 | Supports existing projects                 | ✅  | ❌  | ❌       |
 | Supports Deepseek                          | ✅  | ❌  | ❌       |
+| Supports MCP                               | ✅  | ❌  | ❌       |
+| Supports Generate Design(no open)          | ✅  | ❌  | ❌       |
 
 ## Get Started
 

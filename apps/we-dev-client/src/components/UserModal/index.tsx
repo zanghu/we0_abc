@@ -6,7 +6,7 @@ import { Settings } from "../Settings";
 
 interface LimitModalStore {
   isVisible: boolean;
-  type: "login" | "limit"; // 添加类型区分
+  type: "login" | "limit";
   openModal: (type: "login" | "limit") => void;
   closeModal: () => void;
 }

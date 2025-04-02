@@ -68,7 +68,6 @@ const LoginForm = ({ onSuccess, onTabChange }: LoginFormProps) => {
     e.preventDefault()
     setError("")
     setLoading(true)
-
     try {
       const response = await fetch(
         `${process.env.APP_BASE_URL}/api/auth/login`,
@@ -77,12 +76,14 @@ const LoginForm = ({ onSuccess, onTabChange }: LoginFormProps) => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify({ email, password, language: localStorage.getItem('language')  }),
         }
       )
 
       const data = await response.json()
-
+       if(data.code !== 200){
+        throw new Error(data.message || "Login failed")
+      }
       if(data.status && data.status !== 200){
         throw new Error(data.message || "Login failed")
       }
@@ -106,7 +107,8 @@ const LoginForm = ({ onSuccess, onTabChange }: LoginFormProps) => {
       toast.success("Login successful!")
       onSuccess?.()
     } catch (err) {
-      setError(err.message || "Login failed")
+      
+      setError(t(`login.${err.message}`) || "Login failed")
     } finally {
       setLoading(false)
     }
@@ -168,9 +170,10 @@ const LoginForm = ({ onSuccess, onTabChange }: LoginFormProps) => {
               />
               {t("login.remember_me")}
             </label>
-            <button className="text-[#666] hover:text-[#3B82F6] transition-colors">
+            {/* 没有邮箱验证码，暂时先注释，目前功能是修改密码（没问题） */}
+            {/* <button onClick={() => onTabChange("forgot")} className="text-[#666] hover:text-[#3B82F6] transition-colors">
               {t("login.forgot_password")}
-            </button>
+            </button> */}
           </div>
           <motion.button
             className="w-full bg-gradient-to-r from-[#3B82F6] to-[#2563EB] hover:from-[#2563EB] hover:to-[#1D4ED8]

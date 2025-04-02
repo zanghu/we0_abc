@@ -1,20 +1,26 @@
-import React, { useEffect, useState } from "react"
-import { createPortal } from "react-dom"
-import { GeneralSettings } from "./GeneralSettings"
-import { QuotaSettings } from "./QuotaSettings"
-import { useTranslation } from "react-i18next"
+import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+import { GeneralSettings } from "./GeneralSettings";
+import { QuotaSettings } from "./QuotaSettings";
+import { useTranslation } from "react-i18next";
+import styled from "styled-components";
+import { ThemeMode } from "antd-style";
+import { Divider } from "antd";
+import MCPSettings from "@/components/Settings/MCPSettings";
 
-export type SettingsTab = "General" | "Quota"
+export type SettingsTab = "General" | "Quota" | "MCPServer";
 
+const isElectron = typeof window !== "undefined" && !!window.electron;
 export const TAB_KEYS = {
   GENERAL: "General" as const,
   Quota: "Quota" as const,
-} as const
+  MCPServer: "MCPServer" as const,
+} as const;
 
 interface SettingsProps {
-  isOpen: boolean
-  onClose: () => void
-  initialTab?: SettingsTab
+  isOpen: boolean;
+  onClose: () => void;
+  initialTab?: SettingsTab;
 }
 
 export function Settings({
@@ -22,41 +28,45 @@ export function Settings({
   onClose,
   initialTab = TAB_KEYS.GENERAL,
 }: SettingsProps) {
-  const [mounted, setMounted] = React.useState(false)
-  const [isAnimating, setIsAnimating] = React.useState(false)
-  const [activeTab, setActiveTab] = useState<SettingsTab>(initialTab)
-  const { t } = useTranslation()
+  const [mounted, setMounted] = React.useState(false);
+  const [isAnimating, setIsAnimating] = React.useState(false);
+  const [activeTab, setActiveTab] = useState<SettingsTab>(initialTab);
+  const { t } = useTranslation();
 
   useEffect(() => {
-    console.log("Initial Tab:", initialTab)
-    console.log("Active Tab:", activeTab)
-    setActiveTab(initialTab)
-  }, [initialTab])
+    console.log("Initial Tab:", initialTab);
+    console.log("Active Tab:", activeTab);
+    setActiveTab(initialTab);
+  }, [initialTab]);
 
   useEffect(() => {
-    console.log("Active Tab Changed:", activeTab)
-  }, [activeTab])
+    console.log("Active Tab Changed:", activeTab);
+  }, [activeTab]);
 
   useEffect(() => {
     if (isOpen) {
-      setMounted(true)
+      setMounted(true);
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          setIsAnimating(true)
-        })
-      })
+          setIsAnimating(true);
+        });
+      });
     } else {
-      setIsAnimating(false)
+      setIsAnimating(false);
       const timer = setTimeout(() => {
-        setMounted(false)
-      }, 300)
-      return () => clearTimeout(timer)
+        setMounted(false);
+      }, 300);
+      return () => clearTimeout(timer);
     }
-  }, [isOpen])
+  }, [isOpen]);
 
-  if (!mounted) return null
+  if (!mounted) return null;
 
-  const tabs = [
+  const tabs: Array<{
+    id: SettingsTab;
+    label: string;
+    icon: JSX.Element;
+  }> = [
     {
       id: TAB_KEYS.GENERAL,
       label: t("settings.general"),
@@ -101,7 +111,26 @@ export function Settings({
         </svg>
       ),
     },
-  ]
+  ];
+  tabs.push({
+    id: TAB_KEYS.MCPServer,
+    label: t("settings.MCPServer"),
+    icon: (
+      <svg
+        className="w-5 h-5"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+        />
+      </svg>
+    ),
+  });
 
   return createPortal(
     <div
@@ -122,7 +151,7 @@ export function Settings({
 
       <div
         className={`
-          relative flex bg-white dark:bg-[#18181a] w-[800px] h-[600px] rounded-lg shadow-xl
+          relative flex bg-white dark:bg-[#18181a] w-[1000px] h-[650px] rounded-lg shadow-xl
           transition-all duration-300 ease-out
           ${
             isAnimating
@@ -159,6 +188,7 @@ export function Settings({
         <div className="flex-1 p-5 overflow-y-auto">
           {activeTab === TAB_KEYS.GENERAL && <GeneralSettings />}
           {activeTab === TAB_KEYS.Quota && <QuotaSettings />}
+          {activeTab === TAB_KEYS.MCPServer && <MCPSettings />}
         </div>
 
         {/* Close Button */}
@@ -184,5 +214,61 @@ export function Settings({
       </div>
     </div>,
     document.body
-  )
+  );
 }
+
+export const SettingRow = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 24px;
+`;
+
+export const SettingTitle = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+  font-size: 14px;
+  font-weight: bold;
+`;
+
+export const SettingSubtitle = styled.div`
+  font-size: 14px;
+  @ts-ignore color: var(--color-text-1);
+  margin: 15px 0 0 0;
+  user-select: none;
+  font-weight: bold;
+`;
+
+export const SettingGroup = styled.div<{ theme?: ThemeMode }>`
+  margin-bottom: 20px;
+  border-radius: 8px;
+  @ts-ignore border: 0.5px solid var(--color-border);
+  padding: 16px;
+  background: ${(props) =>
+    props.theme === "dark" ? "#00000010" : "var(--color-background)"};
+`;
+export const SettingContainer = styled.div<{ theme?: ThemeMode }>`
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  @ts-ignore height: calc(100vh - var(--navbar-height));
+  padding: 40px;
+  padding-top: 50px;
+  overflow-y: scroll;
+  font-family: Ubuntu;
+  background: ${(props) =>
+    props.theme === "dark" ? "transparent" : "var(--color-background-soft)"};
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
+export const SettingDivider = styled(Divider)`
+  margin: 10px 0;
+  @ts-ignore border-block-start: 0.5px solid var(--color-border);
+`;
