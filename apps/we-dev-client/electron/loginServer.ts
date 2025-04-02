@@ -116,14 +116,14 @@ export function startLoginServer(mainWindow: BrowserWindow) {
   const server = http.createServer((req, res) => {
     if (req.url?.startsWith("/auth/callback")) {
       const url = new URL(req.url, `http://127.0.0.1:12900`);
-      const token = url.searchParams.get("token");
-
+      const token = url.searchParams?.get("token");
+      
       // Send token to renderer process via IPC
       if (token && mainWindow) {
         console.log("Preparing to send token to renderer process:", token);
         mainWindow.webContents.send("login:callback", token);
       }
-
+      
       // Return React page
       res.writeHead(200, { "Content-Type": "text/html" });
       res.end(htmlTemplate);

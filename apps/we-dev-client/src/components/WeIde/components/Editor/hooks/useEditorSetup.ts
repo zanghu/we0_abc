@@ -39,8 +39,7 @@ export const useEditorSetup = ({
         icons: true,
       }),
     []
-  ); // 使用 useMemo 包装
-
+  );
 
   const extensions = useMemo(() => {
     return [
@@ -51,7 +50,10 @@ export const useEditorSetup = ({
         {
           key: "Mod-c",
           run: (view) => {
-            const text = view.state.sliceDoc(0, view.state.doc.length);
+            const selection = view.state.selection.main;
+            const text = selection.empty
+              ? view.state.doc.line(selection.head).text  // 如果没有选中文本，复制当前行
+              : view.state.sliceDoc(selection.from, selection.to);  // 复制选中的文本
             navigator.clipboard.writeText(text);
             return true;
           }
@@ -84,10 +86,9 @@ export const useEditorSetup = ({
         spellcheck: "false",
       }),
       
-      // 只保留右键菜单支持
       EditorView.domEventHandlers({
         contextmenu: (event, view) => {
-          return false; // 使用默认右键菜单
+          return false; 
         }
       }),
       

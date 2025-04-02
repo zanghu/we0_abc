@@ -40,7 +40,7 @@ export function EditorTabs({
     e.preventDefault();
     const menu = document.createElement("div");
     menu.className =
-      "absolute bg-white dark:bg-[#1a1a1c] border border-[#e5e5e5] dark:border-[#454545] rounded-lg shadow-lg py-1 z-50 transition-opacity duration-150";
+      "absolute bg-white dark:bg-[#252526] border border-[#e5e5e5] dark:border-[#454545] rounded-lg shadow-lg py-1 z-50 transition-opacity duration-150";
     menu.style.left = `${e.clientX}px`;
     menu.style.top = `${e.clientY}px`;
 

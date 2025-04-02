@@ -5,7 +5,7 @@ import { createFileWithContent } from "../WeIde/components/IDEContent/FileExplor
 import useTerminalStore from "@/stores/terminalSlice";
 import { Message } from "ai/react";
 
-class List {
+class Queue {
   private queue: string[] = [];
   private processing: boolean = false;
 
@@ -39,32 +39,55 @@ class List {
       this.processing = false;
     }
   }
+}
+
+export const queue = new Queue();
+
+
+class List {
+  private isRunArray: string[] = [];
+  private nowArray: string[] = [];
+
+  // 添加命令到队列
+  run(commands: string[]) {
+    this.nowArray = commands
+    this.process();
+  }
+
+  private getCommand(number: number) {
+    return this.nowArray?.[number];
+  }
+
+  // 判断命令是否已经执行
+  private getIsRun(number: number) {
+    return this.isRunArray?.[number];
+  }
+
+  // 处理队列
+  private async process() {
+    console.log("this.nowArray", this.nowArray, this.isRunArray);
+    for (let i = 0; i < this.nowArray.length; i++) {
+      const command = this.getCommand(i);
+      const isRuned = this.getIsRun(i);
+      if (command && command !== isRuned) {
+        console.log("执行命令", command);
+        this.isRunArray[i] = command;
+        queue.push(command);
+      }
+    }
+  }
 
   // 清空队列
   clear() {
-    this.queue = [];
-    this.processing = false;
+    this.nowArray = [];
+    this.isRunArray = [];
   }
 }
 
-const execList = new List();
+export const execList = new List();
 
 const messageParser = new StreamingMessageParser({
   callbacks: {
-    onActionClose: async (data) => {
-      if (data.action.type === "shell") {
-        const command = data.action.content.replace(/\n/g, "").trim();
-        execList.push(command);
-        if(messageParser.isUseStartCommand){
-          messageParser.isUseStartCommand = false
-        }
-      } 
-      if (data.action.type === "start") {
-        const command = data.action.content.replace(/\n/g, "").trim();
-        execList.push(command);
-        messageParser.isUseStartCommand = true;
-      }
-    },
     onActionStream: async (data) => {
        createFileWithContent((data.action as FileAction).filePath, data.action.content, true);
       //   workbenchStore.runAction(data, true);

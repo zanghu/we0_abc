@@ -2,59 +2,60 @@ import PreviewIframe from "./PreviewIframe";
 import { useState } from "react";
 import { useFileStore } from "./WeIde/stores/fileStore";
 import WeIde from "./WeIde";
-import { useTranslation } from "react-i18next";
 import useTerminalStore from "@/stores/terminalSlice";
+import WeAPI from "./WeAPI";
+import { useTranslation } from "react-i18next";
+import { Diff } from "./Diff";
 
 const ipcRenderer = window?.electron?.ipcRenderer;
 
-
-// 查找微信开发者工具路径
+// Find WeChat DevTools path
 export async function findWeChatDevToolsPath() {
   try {
-    // 通过 IPC 调用主进程方法获取操作系统类型
+    // Get operating system type through IPC call to main process
     const platform = await ipcRenderer.invoke("node-container:platform");
     console.log(platform, "platform");
     if (platform === "win32") {
-      // Windows 平台
+      // Windows platform
       const defaultPath =
         process.env.Path.split(";")
           .find((value) => {
-            value.includes("微信web开发者工具");
+            value.includes("WeChat Web DevTools");
           })
-          .split("微信web开发者工具")[0] + "微信web开发者工具/cli.bat";
+          .split("WeChat Web DevTools")[0] + "WeChat Web DevTools/cli.bat";
 
       try {
-        // 检查文件是否存在
+        // Check if file exists
         await ipcRenderer.invoke(
           "node-container:check-file-exists",
           defaultPath
         );
         return defaultPath;
       } catch {
-        // 如果默认路径不存在，使用 where 命令查找
+        // If default path doesn't exist, use where command to find
         const result = await ipcRenderer.invoke(
           "node-container:exec-command",
           "where cli.bat"
         );
         if (!result.trim()) {
-          throw new Error("未找到微信开发者工具路径");
+          throw new Error("WeChat DevTools path not found");
         }
         return result.trim();
       }
     } else if (platform === "darwin") {
-      // macOS 平台
+      // macOS platform
       const defaultPath =
         "/Applications/wechatwebdevtools.app/Contents/MacOS/cli";
 
       try {
-        // 检查文件是否存在
+        // Check if file exists
         await ipcRenderer.invoke(
           "node-container:check-file-exists",
           defaultPath
         );
         return defaultPath;
       } catch {
-        // 如果默认路径不存在，使用 find 命令全局搜索
+        // If default path doesn't exist, use find command to search globally
         const result = await ipcRenderer.invoke(
           "node-container:exec-command",
           'find / -name "cli" -type f 2>/dev/null'
@@ -66,24 +67,27 @@ export async function findWeChatDevToolsPath() {
         if (paths.length > 0) {
           return paths[0];
         }
-        throw new Error("未找到微信开发者工具路径");
+        throw new Error("WeChat DevTools path not found");
       }
     } else {
-      throw new Error("不支持的操作系统");
+      throw new Error("Unsupported operating system");
     }
   } catch (error) {
-    throw new Error(`查找微信开发者工具失败: ${error.message}`);
+    throw new Error(`Failed to find WeChat DevTools: ${error.message}`);
   }
 }
 const EditorPreviewTabs: React.FC = () => {
-  const { getFiles, projectRoot } = useFileStore();
-  const [showIframe, setShowIframe] = useState<boolean>(false);
+  const { getFiles, projectRoot,oldFiles,files } = useFileStore();
+  const [showIframe, setShowIframe] = useState<string>("editor");
+  const [frameStyleMap, setFrameStyleMap] = useState<Record<string, string>>({
+    editor: "translate-x-0 opacity-100",
+    weApi: "translate-x-full opacity-100",
+    preview: "translate-x-full opacity-100",
+    diff: "translate-x-full opacity-100"
+  });
   const { t } = useTranslation();
 
-  const {getTerminal} = useTerminalStore();
-
-
-  const isMinPrograme = getFiles().includes("app.json")
+  const isMinPrograme = getFiles().includes("app.json");
 
   const openWeChatEditor = async () => {
     if (!window.electron) {
@@ -105,54 +109,104 @@ const EditorPreviewTabs: React.FC = () => {
     }
   };
 
-  const onToggle = () => {
-    setShowIframe(!showIframe);
+  const onToggle = (name) => {
+    setShowIframe(name);
+    const newFrameStyleMap = { ...frameStyleMap };
+    Object.keys(newFrameStyleMap).forEach((key) => {
+      newFrameStyleMap[key] = "translate-x-full opacity-100";
+    });
+    newFrameStyleMap[name] = "translate-x-0 opacity-100";
+    setFrameStyleMap(newFrameStyleMap);
   };
 
   return (
     <div className="m-1.5 flex-1 relative flex flex-col">
-        {/* <TeamExample ></TeamExample> */}
-      <div className="flex h-10 gap-0.5 bg-[#f6f6f6] dark:bg-[#1a1a1c] pl-0 pt-1 rounded-t-lg justify-between border-b border-[#e4e4e4] dark:border-[#333]">
+      <div className="flex h-10 gap-0.5 bg-[#f3f3f3] dark:bg-[#1a1a1a] pl-0 pt-1 rounded-t-lg justify-between border-b border-[#e4e4e4] dark:border-[#333]">
         <div className="flex-1 flex">
           <TabButton
-            active={!showIframe}
-            onClick={onToggle}
+            active={showIframe == "editor" || !showIframe}
+            onClick={() => {
+              onToggle("editor");
+            }}
             icon={<EditorIcon />}
             label={t("editor.editor")}
           />
           <TabButton
-            active={showIframe}
+            active={showIframe == "preview"}
             onClick={() => {
-              onToggle();
+              onToggle("preview");
               openWeChatEditor();
             }}
             icon={<PreviewIcon />}
             label={t("editor.preview")}
           />
+          {/* <TabButton
+            active={showIframe == "diff"}
+            onClick={() => {
+              onToggle("diff");
+            }}
+            icon={<APITestIcon />}
+            label={t("editor.diff")}
+          /> */}
+          <TabButton
+            active={showIframe == "weApi"}
+            onClick={() => {
+              onToggle("weApi");
+            }}
+            icon={<APITestIcon />}
+            label={t("editor.apiTest")}
+          />
+          
         </div>
+
+        {/* <div className="flex items-center gap-2 mr-2">
+          {(window as any).electron && <OpenDirectoryButton />}
+        </div> */}
       </div>
 
-
       <div className="flex-1 relative overflow-hidden">
-  
         <div
           className={`
           absolute inset-0
           transform transition-all duration-500 ease-in-out
-          ${showIframe ? "-translate-x-full opacity-0" : "translate-x-0 opacity-100"}
+      ${frameStyleMap["editor"]}
         `}
         >
-          <WeIde />
+          <WeIde /> 
         </div>
         <div
           className={`
           absolute inset-0
           transform transition-all duration-500 ease-in-out
-          ${showIframe ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"}
+      ${frameStyleMap["preview"]}
         `}
         >
-          <PreviewIframe isMinPrograme={isMinPrograme} setShowIframe={setShowIframe} />
+          <PreviewIframe
+            isMinPrograme={isMinPrograme}
+            setShowIframe={(show) => {
+              onToggle("preview");
+              setShowIframe(show ? "preview" : "");
+            }}
+          />
         </div>
+        <div
+          className={`
+          absolute inset-0
+          transform transition-all duration-500 ease-in-out
+          ${frameStyleMap["weApi"]}
+        `}
+        >
+          <WeAPI />
+        </div>
+         {/* <div
+          className={`
+          absolute inset-0
+          transform transition-all duration-500 ease-in-out
+          ${frameStyleMap["diff"]}
+        `}
+        >
+           <Diff oldFiles={oldFiles} newFiles={files} />
+        </div> */}
       </div>
     </div>
   );
@@ -243,6 +297,44 @@ const PreviewIcon = () => (
       strokeWidth="2"
       strokeLinecap="round"
     />
+  </svg>
+);
+const APITestIcon = () => (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    {/* API text box */}
+    <rect
+      x="3"
+      y="6"
+      width="18"
+      height="12"
+      rx="2"
+      stroke="currentColor"
+      strokeWidth="2"
+    />
+    {/* Left bracket { */}
+    <path
+      d="M8 10L7 12L8 14"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    {/* Right bracket } */}
+    <path
+      d="M16 10L17 12L16 14"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    {/* Middle dot */}
+    <circle cx="12" cy="12" r="1" fill="currentColor" />
   </svg>
 );
 

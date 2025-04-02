@@ -45,7 +45,7 @@ const RegisterForm = ({ onSuccess, onTabChange }: RegisterFormProps) => {
         setIsRegistered(true)
         toast.success("Registration successful!")
       } else {
-        toast.success(result.message)
+        setError(result.message)
       }
     } catch (err) {
       setError(err.error || "Registration failed")
@@ -151,9 +151,9 @@ const RegisterForm = ({ onSuccess, onTabChange }: RegisterFormProps) => {
             type="password"
             placeholder="Confirm Password"
             required
-            className="w-full bg-[#222] border border-[#333] rounded-xl py-3.5 px-11 text-white placeholder:text-[#666]
-              focus:outline-none focus:border-[#3B82F6] focus:bg-[#1A1A1A] focus:ring-1 focus:ring-[#3B82F6]
-              transition-all duration-300"
+            className="w-full bg-white dark:bg-[#222] border border-gray-200 dark:border-[#333] rounded-xl py-3.5 px-11 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-[#666]
+            focus:outline-none focus:border-[#3B82F6] focus:bg-gray-50 dark:focus:bg-[#1A1A1A] focus:ring-1 focus:ring-[#3B82F6]
+            transition-all duration-300"
           />
         </div>
         <motion.button

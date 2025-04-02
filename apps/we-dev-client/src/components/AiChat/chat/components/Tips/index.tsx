@@ -4,7 +4,6 @@ import { useRef, useState } from "react";
 import { ChatMode } from "../ChatInput";
 import useChatModeStore from "@/stores/chatModeSlice";
 import { UrlInputDialog } from "../UrlInputDialog";
-import track from "@/utils/track";
 import { Logo } from "@/components/Logo";
 
 interface TipsProps {
@@ -86,7 +85,6 @@ const Tips = (props: TipsProps) => {
                 className="flex items-center gap-2 mt-2 mr-4 text-xs text-gray-600 transition-colors cursor-pointer hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400"
                 onClick={() => {
                   fileInputRef.current?.click();
-                  track.event("we0_use_file", {});
                 }}
               >
                 <Upload className="w-4 h-4" />
@@ -106,9 +104,6 @@ const Tips = (props: TipsProps) => {
                 <span
                   onClick={() => {
                     setInput(t("chat.tips.game"));
-                    track.event("we0_use_demo", {
-                      type: "game",
-                    });
                   }}
                   className="px-2 py-1 text-blue-500 rounded bg-blue-50 dark:bg-blue-500/20 dark:text-blue-400"
                 >
@@ -117,9 +112,6 @@ const Tips = (props: TipsProps) => {
                 <span
                   onClick={() => {
                     setInput(t("chat.tips.hello"));
-                    track.event("we0_use_demo", {
-                      type: "good_page",
-                    });
                   }}
                   className="px-2 py-1 text-blue-500 rounded bg-blue-50 dark:bg-blue-500/20 dark:text-blue-400"
                 >
@@ -147,6 +139,7 @@ const Tips = (props: TipsProps) => {
       />
     </div>
   );
+  
 };
 
 export default Tips;

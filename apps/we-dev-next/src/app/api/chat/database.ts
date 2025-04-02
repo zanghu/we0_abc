@@ -1,15 +1,17 @@
 import { promptExtra } from "./prompt";
 
 export const databaseeFunctionRegister = {
-    "mysql":resolveMySql
+    "mysql": resolveMySql
   }
 
-  function resolveMySql(extra:promptExtra){
+  function resolveMySql(extra: promptExtra) {
     let promptArr = [];
-    let username = extra.extra['databaseUsername']??"root";
-    let password = extra.extra['databasePassword']??"root";
-    let databaseUrl = extra.extra['databaseUrl']??"localhost:3306";
-    promptArr.push("IMPORTANT: 根据前端的代码，并且将SQL文件放到SQL文件夹下，实现sql语句，写好数据库创建语句和创表语句，并且写几个样例数据刷到数据库");
-    promptArr.push(`IMPORTANT: 使用Mysql做数据库,Mysql的Url为${databaseUrl},账号为${username},密码为${password},把他写入到后端配置中。`);
+    // Get configuration information from extra['extra']['databaseConfig']
+    let username = extra['extra']?.['databaseConfig']?.['username'] ?? "root";
+    let password = extra['extra']?.['databaseConfig']?.['password'] ?? "root";
+    let databaseUrl = extra['extra']?.['databaseConfig']?.['url'] ?? "localhost:3306";
+    
+    promptArr.push("IMPORTANT: Based on the frontend code, place SQL files in the SQL folder, implement SQL statements, write database creation and table creation statements, and include some sample data to be inserted into the database");
+    promptArr.push(`IMPORTANT: Use MySQL as the database, MySQL URL is ${databaseUrl}, username is ${username}, password is ${password}, write this into the backend configuration.`);
     return promptArr;
   }

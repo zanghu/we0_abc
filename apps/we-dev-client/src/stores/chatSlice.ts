@@ -9,11 +9,26 @@ export interface FilePreview {
   status?: "uploading" | "done" | "error";
 }
 
+interface OtherConfig {
+  isBackEnd: boolean;
+  backendLanguage: string;
+  extra: {
+    isOpenDataBase: boolean;
+    database: string;
+    databaseConfig: {
+      url: string;
+      username: string;
+      password: string;
+    };
+    isOpenCache: boolean;
+    cache: string;
+  };
+}
 
 interface ChatState {
   isDeepThinking: boolean;
   setIsDeepThinking: (isDeepThinking: boolean) => void;
-  modelOptions: IModelOption[]; 
+  modelOptions: IModelOption[];
   setModelOptions: (v: IModelOption[]) => void;
   uploadedImages: FilePreview[];
   setUploadedImages: (images: FilePreview[]) => void;
@@ -21,9 +36,12 @@ interface ChatState {
   updateImageStatus: (id: string, status: FilePreview["status"]) => void;
   removeImage: (id: string) => void;
   clearImages: () => void;
+  otherConfig: OtherConfig;
+  setOtherConfig: (config: OtherConfig | ((prev: OtherConfig) => OtherConfig)) => void;
 }
 const useChatStore = create<ChatState>((set) => ({
   isDeepThinking: false,
+
   setIsDeepThinking: (isDeepThinking: boolean) => set({ isDeepThinking }),
   uploadedImages: [],
   setModelOptions: (options) => set({ modelOptions: options }),
@@ -44,7 +62,28 @@ const useChatStore = create<ChatState>((set) => ({
     })),
   clearImages: () => set({ uploadedImages: [] }),
   modelOptions: [],
-
+   otherConfig: {
+    isBackEnd: false,
+    backendLanguage: "",
+    extra: {
+      isOpenDataBase: false,
+      database: "",
+      databaseConfig: {
+        url: "",
+        username: "",
+        password: "",
+      },
+      isOpenCache: false,
+      cache: "",
+    }
+  },
+  setOtherConfig: (config) => {
+    if (typeof config === 'function') {
+      set((state) => ({ otherConfig: config(state.otherConfig) }));
+    } else {
+      set({ otherConfig: config });
+    }
+  },
 }));
 
 export default useChatStore;

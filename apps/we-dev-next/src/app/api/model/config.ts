@@ -1,5 +1,5 @@
-// 模型配置文件
-// 根据实际场景配置模型
+// Model configuration file
+// Configure models based on actual scenarios
 
 interface ModelConfig {
     modelName: string;
@@ -7,43 +7,43 @@ interface ModelConfig {
     useImage: boolean;
     description?: string;
     iconUrl?: string;
-    provider?: string; // 模型厂商
+    provider?: string; // Model provider
     apiKey?: string;
     apiUrl?: string;
+    functionCall: boolean;
 }
 
 export const modelConfig: ModelConfig[] = [
     {
-        modelName: 'claude-3-5-sonnet', 
+        modelName: 'claude-3-5-sonnet',
         modelKey: 'claude-3-5-sonnet-20240620',
-        useImage: true, 
+        useImage: true,
         provider: 'claude',
-        description: 'claude-3-5-sonnet模型',       
+        description: 'Claude 3.5 Sonnet model',
+        functionCall: true,
     },
     {
-        modelName: 'gpt-4o-mini', 
+        modelName: 'gpt-4o-mini',
         modelKey: 'gpt-4o-mini',
-        useImage: false, 
+        useImage: false,
         provider: 'openai',
-        description: 'gpt-4o-mini模型',       
+        description: 'GPT-4 Optimized Mini model',
+        functionCall: true,
     },
     {
-        modelName: 'deepseek-R1', 
+        modelName: 'deepseek-R1',
         modelKey: 'deepseek-reasoner',
-        useImage: false, 
+        useImage: false,
         provider: 'deepseek',
-        description: 'deepseek-R1模型，支持推理，思维链',
-        apiKey: process.env.THIRD_API_KEY, // 或者其他key...
-        apiUrl: process.env.THIRD_API_URL,
+        description: 'Deepseek R1 model with reasoning and chain-of-thought capabilities',
+        functionCall: false,
     },
-
     {
-        modelName: 'deepseek-v3', 
+        modelName: 'deepseek-v3',
         modelKey: 'deepseek-chat',
-        useImage: false, 
+        useImage: false,
         provider: 'deepseek',
-        description: 'deepseek-v3模型',   
-        apiKey: process.env.THIRD_API_KEY,
-        apiUrl: process.env.THIRD_API_URL,    
+        description: 'Deepseek V3 model',
+        functionCall: true,
     }
 ]

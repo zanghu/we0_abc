@@ -144,7 +144,7 @@ export const ArtifactView: React.FC<ArtifactViewProps> = ({
       /<boltAction\s+type="start"\s*>([\s\S]*?)<\/boltAction>/g;
     const matches = Array.from(content.matchAll(shellCommandRegex));
     const matchesByStart = Array.from(content.matchAll(startCommandRegex));
-
+    
     matches.forEach((match) => {
       const command = match[1].trim();
       if (command.startsWith("npm install")) {
@@ -173,6 +173,7 @@ export const ArtifactView: React.FC<ArtifactViewProps> = ({
         });
       }
     });
+
     return commands;
   }, [content]);
 

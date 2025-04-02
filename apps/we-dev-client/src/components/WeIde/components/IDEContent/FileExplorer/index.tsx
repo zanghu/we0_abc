@@ -43,7 +43,7 @@ export function FileExplorer({ onFileSelect }: FileExplorerProps) {
 
       {contextMenu && (
         <div 
-          className="fixed inset-0" 
+          className="fixed inset-0 z-50" 
           onClick={() => setContextMenu(null)}
         >
           <FolderContextMenu

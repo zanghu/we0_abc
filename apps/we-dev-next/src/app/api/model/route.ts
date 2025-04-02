@@ -11,6 +11,7 @@ export async function POST() {
             description: item.description,
             icon: item.iconUrl,
             provider: item.provider,
+            functionCall: item.functionCall,
         }
     })
      return NextResponse.json(config);

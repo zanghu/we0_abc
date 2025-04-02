@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getTokenUsage } from "../../api/tokens";
 import { Spin } from "antd";
-import useUserStore from "../../stores/userSlice";
+import useUserStore, { TierType } from "../../stores/userSlice";
 import { useTranslation } from "react-i18next";
 
 export function QuotaSettings() {
@@ -28,7 +28,19 @@ export function QuotaSettings() {
     );
   }
   
-  const userQuota = user.userQuota;
+  const userQuota = user.userQuota || {
+    quota: 0,
+    resetTime: new Date(),
+    tierType: TierType.FREE,
+    refillQuota: 0,
+    usedQuota: 0,
+    quotaTotal: 0,
+    tierMessage:{
+      startTime: new Date(),
+      tier: TierType.FREE,
+      resetTime: new Date()
+    }
+  };
 
   if (loading) {
     return (

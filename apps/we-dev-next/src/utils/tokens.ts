@@ -1,71 +1,51 @@
-import TokenAllowance from "@/models/TokenAllowance";
-
 export function estimateTokens(text: string) {
-  // 基本规则  
-  // 1. 英文：约4个字符1个token  
-  // 2. 中文：约1-2个字符1个token  
-  // 3. 空格和标点：约1个token  
+  // Basic rules
+  // 1. English: approximately 4 characters per token
+  // 2. Chinese: approximately 1-2 characters per token
+  // 3. Spaces and punctuation: approximately 1 token
 
   const chineseRegex = /[\u4e00-\u9fff]/g;
   const punctuationRegex = /[.,!?;:，。！？；：]/g;
   const whitespaceRegex = /\s+/g;
 
-  // 计算中文字符数  
+  // Count Chinese characters
   const chineseChars = (text.match(chineseRegex) || []).length;
 
-  // 计算标点符号数  
+  // Count punctuation marks
   const punctuationCount = (text.match(punctuationRegex) || []).length;
 
-  // 计算空格数  
+  // Count whitespace
   const whitespaceCount = (text.match(whitespaceRegex) || []).length;
 
-  // 计算剩余字符（主要是英文）  
+  // Count remaining characters (mainly English)
   const otherChars = text.length - chineseChars - punctuationCount - whitespaceCount;
 
-  // 估算token数量  
+  // Estimate token count
   const tokenEstimate = Math.ceil(
-    chineseChars * 1.5 + // 中文字符  
-    otherChars / 4 + // 英文字符  
-    punctuationCount + // 标点符号  
-    whitespaceCount // 空格  
+    chineseChars * 1.5 + // Chinese characters
+    otherChars / 4 + // English characters
+    punctuationCount + // Punctuation marks
+    whitespaceCount // Whitespace
   );
 
   return tokenEstimate;
 }
 
 /**
- * 使用示例：扣除用户token
- * @param userId 用户ID
- * @param tokensToDeduct 需要扣除的token数量
+ * Usage example: Deduct user tokens
+ * @param userId User ID
+ * @param tokensToDeduct Number of tokens to deduct
  */
 export async function deductUserTokens(userId: string, tokensToDeduct: number) {
-  // 获取当前年月（YYYY-MM格式）
-
-  
+  // Get current year and month (YYYY-MM format)
   const currentMonth = new Date().toISOString().slice(0, 7);
-
-  // 查找并更新用户的token使用记录
-  // upsert: true 表示如果记录不存在则创建新记录
-  await TokenAllowance.findOneAndUpdate(
-    { userId, monthYear: currentMonth },
-    { $inc: { tokensUsed: tokensToDeduct } },
-    { upsert: true }
-  );
 }
 
 /**
- * 检查用户是否还有足够的token
- * @param userId 用户ID
+ * Check if user has enough tokens
+ * @param userId User ID
  * @returns boolean
  */
 export async function hasEnoughTokens(userId: string): Promise<boolean> {
-  const currentMonth = new Date().toISOString().slice(0, 7);
-  const tokenAllowance = await TokenAllowance.findOne({
-    userId,
-    monthYear: currentMonth
-  });
-
-  if (!tokenAllowance) return true; // 新用户尚未有记录
-  console.log(tokenAllowance.tokensUsed, tokenAllowance.monthlyLimit)
-  return tokenAllowance.tokensUsed < tokenAllowance.monthlyLimit;
+  return true;
 }

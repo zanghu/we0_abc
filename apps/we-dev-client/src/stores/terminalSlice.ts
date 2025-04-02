@@ -6,6 +6,7 @@ interface TerminalState {
   isDarkMode: boolean;
   terminals: Map<string | null, weTerminal>;
   newTerminal: (callback?: Function) => void;
+  getEndTerminal: () => weTerminal | undefined;
   resetTerminals: () => void;
   addTerminal: (container: React.RefObject<HTMLDivElement>) => Promise<weTerminal>;
   removeTerminal: (processId: string) => void;
@@ -26,6 +27,12 @@ const useTerminalStore = create<TerminalState>((set, get) => ({
     set({ terminals: new Map() });
 
     get().newTerminal()
+  },
+
+  getEndTerminal: () => {
+    const terminals = get().terminals;
+    const terminalArray = Array.from(terminals.values());
+    return terminalArray[terminalArray.length - 1];
   },
 
   getTerminal: (index: number) => {

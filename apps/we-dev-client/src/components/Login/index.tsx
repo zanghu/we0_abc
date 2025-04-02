@@ -3,8 +3,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
 import useUserStore from "../../stores/userSlice";
+import ForgotPassword from "./ForgotPassword";
 
-export type TabType = "login" | "register";
+export type TabType = "login" | "register" | "forgot";
 type LoginProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -89,6 +90,12 @@ const Login = ({ isOpen, onClose }: LoginProps) => {
                 )}
                 {activeTab === "register" && (
                   <RegisterForm
+                    onSuccess={handleSuccess}
+                    onTabChange={setActiveTab}
+                  />
+                )}
+                {activeTab === "forgot" && (
+                  <ForgotPassword
                     onSuccess={handleSuccess}
                     onTabChange={setActiveTab}
                   />

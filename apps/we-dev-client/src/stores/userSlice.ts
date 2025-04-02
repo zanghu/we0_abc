@@ -16,6 +16,7 @@ export interface TierMessage {
 export interface User {
   id: string
   username: string
+  error?: any
   email: string
   githubId: string
   wechatId: string
@@ -30,7 +31,7 @@ export interface User {
     // 该周期的额度
     usedQuota: number
     quotaTotal: number
-    tierMessage: TierMessage
+
   }
 }
 
@@ -95,7 +96,23 @@ const useUserStore = create<UserState>()(
           const token = localStorage.getItem("token")
           if (token) {
             const user = await authService.getUserInfo(token)
-            get().setUser(user)
+            if (user.error) {
+              localStorage.removeItem("user")
+              localStorage.removeItem("token")
+              localStorage.removeItem("rememberMe")
+              localStorage.removeItem("user-storage")
+              fetch("/api/logout");
+              document.cookie =
+              "token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; secure=true;";
+              set(() => ({
+                user: null,
+                token: null,
+                isAuthenticated: false,
+                rememberMe: false,
+              }))
+            } else {
+              get().setUser(user)
+            }
             return user
           }
         } catch (error) {
@@ -121,6 +138,7 @@ const useUserStore = create<UserState>()(
         localStorage.removeItem("user")
         localStorage.removeItem("token")
         localStorage.removeItem("rememberMe")
+        localStorage.removeItem("user-storage")
         if (!window.electron) {
           document.cookie =
             "token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;"
@@ -164,9 +182,7 @@ const useUserStore = create<UserState>()(
         isAuthenticated: state.isAuthenticated,
         rememberMe: state.rememberMe,
       }),
-      // 添加存储版本号，方便后续升级迁移
       version: 1,
-      // 初始化时从 localStorage 恢复状态
       onRehydrateStorage: () => (state) => {
         const rememberMe = localStorage.getItem("rememberMe") === "true"
         if (rememberMe) {

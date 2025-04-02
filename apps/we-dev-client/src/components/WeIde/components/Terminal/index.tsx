@@ -9,6 +9,8 @@ import { eventEmitter } from "@/components/AiChat/utils/EventEmitter";
 import { use } from "i18next";
 import useChatModeStore from "@/stores/chatModeSlice";
 import useThemeStore from "@/stores/themeSlice";
+import useChatStore from "@/stores/chatSlice";
+import { useFileStore } from "../../stores/fileStore";
 interface TerminalItem {
   processId: string; // 自增 id
   containerRef: React.RefObject<HTMLDivElement>; // 终端的容器
@@ -111,10 +113,13 @@ function TerminalItem({
 }) {
   const {isDarkMode} = useThemeStore()
 
+  const { addError } = useFileStore();
+
   useEffect(() => {
     // 获取当前主题
-    terminal.initialize(containerRef.current, processId);
+    terminal.initialize(containerRef.current, processId, addError);
   }, [containerRef.current]);
+  
   useEffect(()=>{
     terminal.setTheme(isDarkMode)
   },[isDarkMode])

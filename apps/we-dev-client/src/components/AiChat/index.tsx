@@ -2,8 +2,10 @@ import { ConfigProvider, theme } from "antd";
 import { BaseChat } from "./chat";
 import { ChatMode } from "@/types/chat";
 import useChatModeStore from "@/stores/chatModeSlice";
+
 const Independent: React.FC = () => {
   const { mode, initOpen } = useChatModeStore();
+
 
   return (
     <ConfigProvider

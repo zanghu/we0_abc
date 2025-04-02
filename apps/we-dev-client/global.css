@@ -5,8 +5,16 @@
 }
 @tailwind components;
 @tailwind utilities;
-.CodeMirror-cursor {
-   border-left: 2px solid #ff0000 !important; /* 设置光标颜色为红色，宽度为2px */
+* {
+  /* Firefox */
+  scrollbar-width: none;
+  /* IE 10+ */
+  -ms-overflow-style: none;
+}
+
+/* Webkit (Chrome, Safari, Edge) */
+*::-webkit-scrollbar {
+  display: none;
 }
 .ant-modal {
   top: unset;

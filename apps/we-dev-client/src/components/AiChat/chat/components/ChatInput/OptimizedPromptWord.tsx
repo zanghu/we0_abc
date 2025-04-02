@@ -1,4 +1,4 @@
-import track from "@/utils/track";
+
 import { useState, useRef, useEffect } from "react";
 import { useTranslation } from 'react-i18next';
 
@@ -16,7 +16,7 @@ const PromptEnhanced = (props: PromptEnhancedProps) => {
   const { t } = useTranslation();
   useEffect(() => {
     if (isOpen) {
-      setPromptText("");
+      setPromptText(input);
     }
   }, [isOpen]);
   const handleClick = async () => {
@@ -29,7 +29,6 @@ const PromptEnhanced = (props: PromptEnhancedProps) => {
         }),
       });
       const r = await res.json();
-      track.event('we0_use_enhandPrompt', {})
       setInput(r.text);
       setIsOpen(false);
     } catch (error) {
@@ -69,7 +68,7 @@ const PromptEnhanced = (props: PromptEnhancedProps) => {
           </h3>
           <textarea
             className="w-full h-32 p-2.5 text-xs border rounded-lg bg-white/50 dark:bg-gray-700/50 dark:border-gray-600/50 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition-all duration-200"
-            value={input}
+            value={promptText}
             onChange={(e) => setPromptText(e.target.value)}
             placeholder={t('chat.optimizePrompt.placeholder')}
             onKeyDown={async (e) => {

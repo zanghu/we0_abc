@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, Dispatch, SetStateAction } from "react";
 import { getContainerInstance } from "./WeIde/services";
 import { Smartphone, Tablet, Laptop, Monitor, ChevronDown } from "lucide-react";
 import { findWeChatDevToolsPath } from "./EditorPreviewTabs";
@@ -6,7 +6,7 @@ import { useFileStore } from "./WeIde/stores/fileStore";
 import { useTranslation } from "react-i18next";
 
 interface PreviewIframeProps {
-  setShowIframe: (show: boolean) => void;
+  setShowIframe: Dispatch<SetStateAction<string>>;
   isMinPrograme: boolean;
 }
 interface WindowSize {
@@ -41,8 +41,8 @@ const PreviewIframe: React.FC<PreviewIframeProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const [selectedSize, setSelectedSize] = useState<WindowSize>(WINDOW_SIZES[0]);
-  const [isWindowSizeDropdownOpen, setIsWindowSizeDropdownOpen] =
-    useState(false);
+  const [isWindowSizeDropdownOpen, setIsWindowSizeDropdownOpen] = useState(false);
+  const [iframeLoaded, setIframeLoaded] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -50,10 +50,11 @@ const PreviewIframe: React.FC<PreviewIframeProps> = ({
       instance?.on("server-ready", (port, url) => {
         console.log("server-ready", port, url);
         setUrl(url);
-        setShowIframe(true);
+        setShowIframe("preview");
         setPort(port.toString());
       });
     })();
+
   }, []);
 
   const handleRefresh = () => {
@@ -141,8 +142,61 @@ const PreviewIframe: React.FC<PreviewIframeProps> = ({
     );
   };
 
+  useEffect(() => {
+    if (iframeLoaded && iframeRef.current?.contentWindow) {
+      try {
+        const injectScript = `
+         
+        `;
+        
+        const iframeWindow = iframeRef.current.contentWindow;
+        const script = iframeWindow.document.createElement('script');
+        script.textContent = injectScript;
+        iframeWindow.document.head.appendChild(script);
+        
+      } catch (error) {
+        console.error( error);
+      }
+    }
+  }, [iframeLoaded]);
+
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data.type === 'REQUEST_BLOB_ACCESS') {
+        const blobUrl = event.data.blobUrl;
+        const requestId = event.data.requestId;
+      
+      
+        fetch(blobUrl)
+          .then(response => response.blob())
+          .then(blob => {
+            const reader = new FileReader();
+            reader.onloadend = function() {
+              const base64data = reader.result as string;
+              const base64Content = base64data.split(',')[1];
+              if (iframeRef.current?.contentWindow) {
+                iframeRef.current.contentWindow.postMessage({
+                  type: 'BLOB_ACCESS_GRANTED',
+                  blobData: base64Content,
+                  contentType: blob.type,
+                  originalUrl: blobUrl,
+                  requestId: requestId
+                }, '*');
+              
+              }
+            };
+            reader.readAsDataURL(blob);
+          })
+          .catch(error => console.error( error));
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
+
   return (
-    <div className="preview-container w-full h-full relative flex flex-col overflow-hidden">
+    <div     className="preview-container w-full h-full relative flex flex-col overflow-hidden">
       <div className="browser-header bg-white dark:bg-[#1a1a1c] border-b border-gray-200 px-4 py-1 flex items-center space-x-2">
         <div className="flex space-x-1.5">
           <div className="w-3 h-3 rounded-full bg-red-500"></div>
@@ -284,8 +338,8 @@ const PreviewIframe: React.FC<PreviewIframeProps> = ({
         <div
           className="bg-white transition-all duration-200 origin-center"
           style={{
-            width: String(selectedSize?.width)?.indexOf('%') > -1 ?  selectedSize.width  : `${selectedSize.width}px`,
-            height: String(selectedSize?.height)?.indexOf('%') > -1 ? selectedSize.height : `${selectedSize.height}px`,
+            width: String(selectedSize?.width)?.indexOf('%') > -1 ?  `${(Number.parseFloat(String(selectedSize.width)) * ((1 / scale)))}%`  : `${(Number(selectedSize.width) * (1 / scale))}px`,
+            height: String(selectedSize?.height)?.indexOf('%') > -1 ?`${(Number.parseFloat(String(selectedSize.height)) * (1 / scale))}%`  : `${(Number(selectedSize.height) * (1 / scale))}px`,
             transform: `scale(${scale})`,
           }}
         >
@@ -294,11 +348,13 @@ const PreviewIframe: React.FC<PreviewIframeProps> = ({
             src={url}
             className="w-full h-full border-none rounded-b-lg bg-white"
             style={{
+              width: '100%',
               minHeight: "400px",
             }}
             title="preview"
-            sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+            sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-downloads"
             allow="cross-origin-isolated"
+            onLoad={() => setIframeLoaded(true)}
           />
         </div>
         {isMinPrograme && (

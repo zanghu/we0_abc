@@ -133,7 +133,7 @@ export function FileTreeItem({
       </div>
 
       {contextMenu && (
-        <div className="fixed inset-0" onClick={() => setContextMenu(null)}>
+        <div className="fixed inset-0 z-50" onClick={() => setContextMenu(null)}>
           {item.type === "file" ? (
             <FileContextMenu
               x={contextMenu.x}
