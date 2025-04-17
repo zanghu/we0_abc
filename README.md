@@ -6,6 +6,9 @@
 
 ![alt text](./docs/img/image-1.png)
 
+## Video
+[![youtube](https://we0.ai/en/opengraph-image.png?dda1b12e6eb7c5e1)](https://www.youtube.com/watch?v=-dyf0Zb8h20)
+
 ## What Makes We0 Different?
 
 Currently, Cursor, v0, and Bolt.new have impressive performance in web project generation. The We0 project has the following features:
