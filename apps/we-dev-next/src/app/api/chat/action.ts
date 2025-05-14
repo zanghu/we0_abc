@@ -9,7 +9,8 @@ import {
 import type { LanguageModel, Message } from "ai";
 import { modelConfig } from "../model/config";
 import { createDeepSeek } from "@ai-sdk/deepseek";
-export const MAX_TOKENS = 16000;
+//export const MAX_TOKENS = 16000;
+export const MAX_TOKENS = 8192; // TODO: 临时方案，解决deepseek-v3模型报错问题
 
 export type StreamingOptions = Omit<Parameters<typeof _streamText>[0], "model">;
 let initOptions = {};

@@ -37,6 +37,7 @@ rm -rf apps/we-dev-next/public/wedev_public/*
 print_progress "正在移动文件..."
 
 # 移动 dist 目录下的所有文件到 public/wedev_public
+mkdir -p apps/we-dev-next/public/wedev_public
 mv apps/we-dev-client/dist/* apps/we-dev-next/public/wedev_public/
 
 # 检查移动是否成功
